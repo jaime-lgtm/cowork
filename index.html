@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COWORK: Tu Nueva Historia | Casa de la Cultura Piedras Negras</title>
+<meta name="description" content="Espacio de coworking público y gratuito para toda la comunidad en la Casa de la Cultura de Piedras Negras. Reserva salones, inscríbete a talleres y, si tienes de 15 a 29 años, tramita la Tarjeta Jóvenes de la Nueva Historia para beneficios en Cafetería Sueño de Luna.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="COWORK: Tu Nueva Historia">
+<meta property="og:description" content="Espacio de coworking público y gratuito en la Casa de la Cultura de Piedras Negras, en alianza con Sueño de Luna.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="images/foto-hero-cafeteria.png">
+<link rel="icon" href="images/logo-cowork.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#f7f5f2; --paper:#fff; --line:#e3dbcf; --ink:#2a1f1a; --ink-soft:#6b5c50;
+    --maroon:#6e1f24; --brown:#6b3a2c; --olive:#9fac1f; --gold:#c9a227;
+  }
+  *{box-sizing:border-box;}
+  html{overflow-x:hidden;}
+  body{margin:0;overflow-x:hidden;background:var(--cream);font-family:'Manrope',sans-serif;color:var(--ink);}
+  a{color:var(--maroon);text-decoration:none;}
+  a:hover{color:var(--brown);text-decoration:underline;}
+  input,select{font-family:'Manrope',sans-serif;}
+  ::placeholder{color:#a89a8c;}
+  [hidden]{display:none !important;}
+  button{font-family:'Manrope',sans-serif;}
+  button:disabled{opacity:1;}
+</style>
+<style id="claude-agent-animation-styles">
+      @keyframes claude-pulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+      }
+      #claude-agent-glow-border-inner {
+        animation: claude-pulse 2s ease-in-out infinite;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #claude-agent-glow-border-inner {
+          animation: none;
+        }
+      }
+    </style></head>
+<body>
+
+<header style="position:sticky;top:0;z-index:50;background:rgba(247,245,242,0.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px clamp(20px,4vw,64px);flex-wrap:wrap;">
+  <img src="images/logo-cowork.png" alt="Cowork: Tu Nueva Historia" style="height:44px;object-fit:contain;">
+  <button id="nav-toggle" aria-label="Abrir menú de navegación" aria-expanded="false" hidden="" style="background:none;border:1px solid var(--line);padding:12px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;gap:4px;">
+    <div style="width:22px;height:2px;background:var(--ink);"></div>
+    <div style="width:22px;height:2px;background:var(--ink);"></div>
+    <div style="width:22px;height:2px;background:var(--ink);"></div>
+  </button>
+  <nav id="main-nav" style="display: flex; gap: clamp(12px, 2vw, 28px); flex-wrap: wrap; font-size: 15px; font-weight: 600; color: var(--ink-soft);">
+    <a href="#inicio" style="color:var(--ink-soft);">Inicio</a>
+    <a href="#sobre" style="color:var(--ink-soft);">Sobre el Cowork</a>
+    <a href="#reservar" style="color:var(--ink-soft);">Reservar Espacio</a>
+    <a href="#capacitaciones" style="color:var(--ink-soft);">Capacitaciones</a>
+    <a href="#promociones" style="color:var(--ink-soft);">Promociones Sueño de Luna</a>
+    <a href="#tarjeta" style="color:var(--ink-soft);">Obtén tu Tarjeta</a>
+  </nav>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <img src="images/logo-piedras-negras.png" alt="Piedras Negras" style="height:34px;object-fit:contain;">
+    <div style="width:1px;height:26px;background:var(--line);"></div>
+    <img src="images/logo-casa-cultura.png" alt="Casa de la Cultura" style="height:30px;object-fit:contain;">
+  </div>
+</header>
+
+<div id="floating-buttons">
+  <div id="visit-panel" hidden="" style="position:fixed;bottom:152px;right:24px;z-index:60;width:min(340px,90vw);background:#fff;border:1px solid var(--line);box-shadow:0 12px 32px rgba(0,0,0,0.18);padding:24px;display:flex;flex-direction:column;gap:12px;">
+    <div style="font-weight:700;font-size:17px;color:var(--brown);">Registra tu visita de hoy</div>
+    <input id="visit-nombre" type="text" placeholder="Nombre" style="padding:12px;border:1px solid var(--line);font-size:15px;">
+    <input id="visit-edad" type="number" placeholder="Edad" style="padding:12px;border:1px solid var(--line);font-size:15px;">
+    <input id="visit-folio" type="text" placeholder="Folio de tarjeta (opcional)" style="padding:12px;border:1px solid var(--line);font-size:15px;">
+    <select id="visit-espacio" style="padding:12px;border:1px solid var(--line);font-size:15px;">
+      <option value="auditorio">Auditorio Municipal</option>
+      <option value="salon">Salón de Usos Múltiples</option>
+      <option value="biblioteca">Biblioteca Computacional</option>
+      <option value="cafeteria">Área de cafetería</option>
+    </select>
+    <input id="visit-honeypot" type="text" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
+    <button id="visit-submit" style="background:var(--maroon);color:#fff;font-weight:700;padding:14px;font-size:15px;border:none;cursor:pointer;">Registrar visita</button>
+    <div id="visit-success" hidden="" style="color:var(--olive);font-weight:700;font-size:14px;">¡Gracias! Tu visita quedó registrada.</div>
+    <div id="visit-error" hidden="" style="color:var(--maroon);font-weight:700;font-size:14px;"></div>
+  </div>
+  <button id="visit-panel-toggle" aria-label="Registrar mi visita de hoy" style="position:fixed;bottom:24px;right:24px;z-index:60;background:var(--gold);color:#2a1f1a;font-weight:700;padding:16px 24px;font-size:15px;border:none;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.2);">Registra tu visita de hoy</button>
+  <a href="https://wa.me/528781333237?text=Hola%2C%20tengo%20una%20duda%20sobre%20Cowork%3A%20Tu%20Nueva%20Historia" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp para dudas rápidas" style="position:fixed;bottom:88px;right:24px;z-index:60;background:#25D366;color:#fff;font-weight:700;padding:16px 22px;font-size:15px;border:none;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.2);display:flex;align-items:center;gap:10px;">
+    <span style="width:10px;height:10px;border-radius:50%;background:#fff;flex:none;"></span>
+    ¿Dudas? Escríbenos por WhatsApp
+  </a>
+</div>
+
+<section id="inicio" style="background:var(--maroon);color:#fff;padding:clamp(50px,7vw,100px) clamp(20px,4vw,64px);display:flex;gap:48px;flex-wrap:wrap;align-items:center;">
+  <div style="flex:1 1 460px;min-width:300px;">
+    <div style="font-family:'Barlow Condensed';letter-spacing:3px;text-transform:uppercase;color:#f0d9a0;font-weight:600;font-size:15px;">Casa de la Cultura · Piedras Negras</div>
+    <h1 style="font-size:clamp(34px,4.6vw,56px);line-height:1.1;margin:18px 0 0;">Tu espacio de trabajo, creación y comunidad</h1>
+    <p style="font-size:clamp(17px,1.6vw,20px);color:#f2ddd3;line-height:1.5;max-width:560px;margin:20px 0 0;">Espacio de trabajo público y gratuito para toda la comunidad, de lunes a sábado de 9:00 a.m. a 8:00 p.m. Reserva tu espacio, participa en nuestros talleres de formación y, si tienes de 15 a 29 años, tramita tu Tarjeta "Jóvenes de la Nueva Historia" para beneficios exclusivos en Cafetería Sueño de Luna.</p>
+    <div style="display:flex;gap:16px;margin-top:32px;flex-wrap:wrap;">
+      <a href="#reservar" style="background:var(--olive);color:#20260a;font-weight:700;padding:16px 30px;font-size:16px;">Reservar un espacio</a>
+      <a href="#tarjeta" style="border:1px solid rgba(255,255,255,0.5);color:#fff;font-weight:700;padding:16px 30px;font-size:16px;">Obtén tu tarjeta</a>
+    </div>
+    <div style="margin-top:36px;display:flex;flex-direction:column;gap:10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.22);padding:20px 24px;max-width:480px;">
+      <div style="font-family:'Barlow Condensed';font-size:13px;font-weight:700;letter-spacing:1.5px;color:#f0d9a0;text-transform:uppercase;">Disponibilidad ahora mismo</div>
+      <div style="display:flex;justify-content:space-between;font-size:15px;"><span>Auditorio Municipal</span><span id="live-auditorio" style="font-weight: 700; color: rgb(232, 180, 180);">Ocupado</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:15px;"><span>Salón de Usos Múltiples</span><span id="live-salon" style="font-weight: 700; color: var(--olive);">Libre</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:15px;"><span>Biblioteca Computacional</span><span id="live-biblioteca" style="font-weight: 700; color: rgb(240, 217, 160);">2 de 8 lugares libres</span></div>
+    </div>
+  </div>
+  <div style="flex:1 1 380px;min-width:280px;height:320px;border:1px solid rgba(255,255,255,0.25);overflow:hidden;">
+    <img src="images/foto-hero-cafeteria.png" alt="Jóvenes trabajando en la zona de coworking junto a Sueño de Luna" style="width:100%;height:100%;object-fit:cover;display:block;">
+  </div>
+</section>
+
+<section id="tarjeta-cta" style="background:var(--gold);padding:22px clamp(20px,4vw,64px);display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;">
+  <span style="font-weight:700;color:#2a1f1a;font-size:17px;">¿Aún no tienes tu Tarjeta "Jóvenes de la Nueva Historia"?</span>
+  <a href="https://piedrasnegras.tumunicipio.mx/ev/68b1fd93950ad92a5fb81255/66bfe739aeba1d0007cfaaf" target="_blank" rel="noopener" style="background:var(--maroon);color:#fff;font-weight:700;padding:12px 26px;font-size:15px;">Regístrate aquí →</a>
+</section>
+
+<section id="sobre" style="padding:clamp(50px,7vw,90px) clamp(20px,4vw,64px);display:flex;flex-direction:column;gap:44px;">
+  <div>
+    <div style="font-family:'Barlow Condensed';letter-spacing:3px;text-transform:uppercase;color:var(--maroon);font-weight:600;font-size:15px;">Sobre el Cowork</div>
+    <h2 style="font-size:clamp(28px,3.2vw,40px);color:var(--brown);margin:12px 0 0;">Un espacio abierto en el corazón de la ciudad</h2>
+  </div>
+  <div style="display:flex;gap:48px;flex-wrap:wrap;">
+    <div style="flex:1 1 320px;display:flex;flex-direction:column;gap:18px;">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:1px;">Dirección</div>
+        <div style="font-size:19px;margin-top:4px;">Adolfo López Mateos 1334, Col. Roma, Piedras Negras, Coahuila</div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:1px;">Horario</div>
+        <div style="font-size:19px;margin-top:4px;">Lunes a sábado, 9:00 a.m. – 8:00 p.m.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-top:8px;">
+        <div style="background:var(--paper);border:1px solid var(--line);padding:18px;text-align:center;font-size:15px;font-weight:600;">Área Climatizada</div>
+        <div style="background:var(--paper);border:1px solid var(--line);padding:18px;text-align:center;font-size:15px;font-weight:600;">Internet alta velocidad</div>
+        <div style="background:var(--paper);border:1px solid var(--line);padding:18px;text-align:center;font-size:15px;font-weight:600;">Área cafetería Sueño de Luna</div>
+        <div style="background:var(--paper);border:1px solid var(--line);padding:18px;text-align:center;font-size:15px;font-weight:600;">Baños en ambas plantas</div>
+        <div style="background:var(--paper);border:1px solid var(--line);padding:18px;text-align:center;font-size:15px;font-weight:600;">Áreas de Descanso</div>
+        <div style="background:var(--paper);border:1px solid var(--line);padding:18px;text-align:center;font-size:15px;font-weight:600;">Estaciones de carga</div>
+        <div style="background:var(--paper);border:1px solid var(--line);padding:18px;text-align:center;font-size:15px;font-weight:600;">Servicio de impresora y escáner</div>
+      </div>
+    </div>
+    <div style="flex:2 1 460px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="height:180px;overflow:hidden;"><img src="images/foto-biblioteca.png" alt="Biblioteca computacional" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+        <div style="font-size:15px;font-weight:700;color:var(--brown);text-align:center;">Biblioteca Computacional</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="height:180px;overflow:hidden;"><img src="images/foto-salon.png" alt="Salón de usos múltiples" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+        <div style="font-size:15px;font-weight:700;color:var(--brown);text-align:center;">Salón de Usos Múltiples</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="height:180px;overflow:hidden;"><img src="images/foto-auditorio.png" alt="Auditorio municipal" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+        <div style="font-size:15px;font-weight:700;color:var(--brown);text-align:center;">Auditorio Municipal</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="height:180px;overflow:hidden;"><img src="images/foto-hero-cafeteria.png" alt="Cafetería Sueño de Luna" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+        <div style="font-size:15px;font-weight:700;color:var(--brown);text-align:center;">Cafetería Sueño de Luna</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="reservar" style="background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:clamp(50px,7vw,90px) clamp(20px,4vw,64px);display:flex;flex-direction:column;gap:36px;">
+  <div>
+    <div style="font-family:'Barlow Condensed';letter-spacing:3px;text-transform:uppercase;color:var(--maroon);font-weight:600;font-size:15px;">Reservar espacio</div>
+    <h2 style="font-size:clamp(28px,3.2vw,40px);color:var(--brown);margin:12px 0 0;">Disponibilidad en tiempo real</h2>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div style="font-size:14px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:1px;">1. Elige el espacio</div>
+    <div id="space-buttons" style="display:flex;gap:14px;flex-wrap:wrap;">
+      <button data-space="auditorio" style="padding: 14px 22px; font-size: 15px; font-weight: 700; cursor: pointer; border: 1px solid var(--maroon); background: var(--maroon); color: rgb(255, 255, 255);">Auditorio Municipal <span style="opacity:0.7;font-weight:500;">· 110 personas</span></button>
+      <button data-space="salon" style="padding: 14px 22px; font-size: 15px; font-weight: 700; cursor: pointer; border: 1px solid var(--line); background: rgb(255, 255, 255); color: var(--ink);">Salón de Usos Múltiples <span style="opacity:0.7;font-weight:500;">· 80 personas</span></button>
+      <button data-space="biblioteca" style="padding: 14px 22px; font-size: 15px; font-weight: 700; cursor: pointer; border: 1px solid var(--line); background: rgb(255, 255, 255); color: var(--ink);">Biblioteca Computacional <span style="opacity:0.7;font-weight:500;">· equipo individual</span></button>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div style="font-size:14px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:1px;">2. Elige la fecha</div>
+    <div id="date-buttons" style="display:flex;gap:12px;flex-wrap:wrap;"><button style="padding: 12px 18px; font-size: 14px; font-weight: 700; border: 1px solid var(--maroon); background: var(--maroon); color: rgb(255, 255, 255); cursor: pointer;">Mié 22 jul</button><button style="padding: 12px 18px; font-size: 14px; font-weight: 700; border: 1px solid var(--line); background: rgb(255, 255, 255); color: var(--ink); cursor: pointer;">Jue 23 jul</button><button style="padding: 12px 18px; font-size: 14px; font-weight: 700; border: 1px solid var(--line); background: rgb(255, 255, 255); color: var(--ink); cursor: pointer;">Vie 24 jul</button><button style="padding: 12px 18px; font-size: 14px; font-weight: 700; border: 1px solid var(--line); background: rgb(255, 255, 255); color: var(--ink); cursor: pointer;">Sáb 25 jul</button><button style="padding: 12px 18px; font-size: 14px; font-weight: 700; border: 1px solid var(--line); background: rgb(255, 255, 255); color: var(--ink); cursor: pointer;">Lun 27 jul</button></div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <div style="font-size:14px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:1px;">3. Elige el horario</div>
+    <div id="time-status" style="font-size:14px;color:var(--ink-soft);"></div>
+    <div id="time-buttons" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;"><button style="padding: 16px 10px; font-size: 15px; font-weight: 700; border: 1px solid var(--line); background: rgb(255, 255, 255); color: var(--ink); cursor: pointer;"><span>9:00 – 10:00</span><span style="display:block;font-size:12px;font-weight:600;margin-top:4px;">Disponible</span></button><button style="padding: 16px 10px; font-size: 15px; font-weight: 700; border: 1px solid var(--line); background: rgb(255, 255, 255); color: var(--ink); cursor: pointer;"><span>10:00 – 11:00</span><span style="display:block;font-size:12px;font-weight:600;margin-top:4px;">Disponible</span></button><button style="padding: 16px 10px; font-size: 15px; font-weight: 700; border: 1px solid var(--line); background: rgb(255, 255, 255); color: var(--ink); cursor: pointer;"><span>11:00 – 12:00</span><span style="display:block;font-size:12px;font-weight:600;margin-top:4px;">Disponible</span></button><button style="padding: 16px 10px; font-size: 15px; font-weight: 700; border: 1px solid var(--line); background: rgb(255, 255, 255); color: var(--ink); cursor: pointer;"><span>12:00 – 13:00</span><span style="display:block;font-size:12px;font-weight:600;margin-top:4px;">Disponible</span></button><button style="padding: 16px 10px; font-size: 15px; font-weight: 700; border: 1px solid var(--line); background: rgb(255, 255, 255); color: var(--ink); cursor: pointer;"><span>13:00 – 14:00</span><span style="display:block;font-size:12px;font-weight:600;margin-top:4px;">Disponible</span></button><button style="padding: 16px 10px; font-size: 15px; font-weight: 700; border: 1px solid var(--line); background: rgb(255, 255, 255); color: var(--ink); cursor: pointer;"><span>14:00 – 15:00</span><span style="display:block;font-size:12px;font-weight:600;margin-top:4px;">Disponible</span></button><button style="padding: 16px 10px; font-size: 15px; font-weight: 700; border: 1px solid var(--line); background: rgb(255, 255, 255); color: var(--ink); cursor: pointer;"><span>15:00 – 16:00</span><span style="display:block;font-size:12px;font-weight:600;margin-top:4px;">Disponible</span></button><button style="padding: 16px 10px; font-size: 15px; font-weight: 700; border: 1px solid var(--line); background: rgb(255, 255, 255); color: var(--ink); cursor: pointer;"><span>16:00 – 17:00</span><span style="display:block;font-size:12px;font-weight:600;margin-top:4px;">Disponible</span></button><button style="padding: 16px 10px; font-size: 15px; font-weight: 700; border: 1px solid var(--line); background: rgb(255, 255, 255); color: var(--ink); cursor: pointer;"><span>17:00 – 18:00</span><span style="display:block;font-size:12px;font-weight:600;margin-top:4px;">Disponible</span></button><button style="padding: 16px 10px; font-size: 15px; font-weight: 700; border: 1px solid var(--line); background: rgb(255, 255, 255); color: var(--ink); cursor: pointer;"><span>18:00 – 19:00</span><span style="display:block;font-size:12px;font-weight:600;margin-top:4px;">Disponible</span></button><button style="padding: 16px 10px; font-size: 15px; font-weight: 700; border: 1px solid var(--line); background: rgb(255, 255, 255); color: var(--ink); cursor: pointer;"><span>19:00 – 20:00</span><span style="display:block;font-size:12px;font-weight:600;margin-top:4px;">Disponible</span></button></div>
+  </div>
+
+  <div id="confirm-box" hidden="" style="display:flex;flex-direction:column;gap:18px;background:var(--cream);border:1px solid var(--line);padding:22px 26px;max-width:520px;">
+    <div style="font-size:14px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:1px;">4. Tus datos</div>
+    <div style="font-size:16px;color:var(--ink);">Reservando <strong id="confirm-space"></strong> el <strong id="confirm-date"></strong> de <strong id="confirm-time"></strong>.</div>
+    <input id="reserva-nombre" type="text" placeholder="Nombre completo" style="padding:14px;border:1px solid var(--line);font-size:15px;background:#fff;">
+    <input id="reserva-telefono" type="tel" placeholder="Teléfono / WhatsApp" aria-label="Teléfono o WhatsApp" style="padding:14px;border:1px solid var(--line);font-size:15px;background:#fff;">
+    <input id="reserva-correo" type="email" placeholder="Correo electrónico (opcional)" aria-label="Correo electrónico" style="padding:14px;border:1px solid var(--line);font-size:15px;background:#fff;">
+    <div id="reserva-error" hidden="" style="color:var(--maroon);font-weight:700;font-size:14px;"></div>
+    <button id="confirm-reservation" style="background:var(--maroon);color:#fff;font-weight:700;padding:14px 28px;font-size:15px;border:none;cursor:pointer;">Confirmar reservación</button>
+  </div>
+
+  <div id="confirmed-box" hidden="" style="display:flex;gap:28px;flex-wrap:wrap;align-items:center;background:#f2ede2;border:1px solid var(--gold);padding:28px;">
+    <div id="qr-grid" style="display:grid;grid-template-columns:repeat(10,10px);grid-template-rows:repeat(10,10px);gap:2px;"></div>
+    <div>
+      <div style="font-size:14px;font-weight:700;color:var(--olive);text-transform:uppercase;letter-spacing:1px;">Reservación confirmada</div>
+      <div style="font-size:22px;font-weight:700;color:var(--brown);margin-top:6px;">Folio <span id="confirmation-code"></span></div>
+      <div style="font-size:15px;color:var(--ink-soft);margin-top:4px;">Presenta este código o tu tarjeta "Jóvenes de la Nueva Historia" al llegar.</div>
+    </div>
+  </div>
+</section>
+
+<section id="capacitaciones" style="padding:clamp(50px,7vw,90px) clamp(20px,4vw,64px);display:flex;flex-direction:column;gap:36px;">
+  <div>
+    <div style="font-family:'Barlow Condensed';letter-spacing:3px;text-transform:uppercase;color:var(--maroon);font-weight:600;font-size:15px;">Capacitaciones</div>
+    <h2 style="font-size:clamp(28px,3.2vw,40px);color:var(--brown);margin:12px 0 0;">Calendario mensual de talleres</h2>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;">
+    <div style="background:var(--paper);border:1px solid var(--line);padding:30px;display:flex;flex-direction:column;gap:14px;">
+      <div style="font-family:'Barlow Condensed';font-size:14px;font-weight:700;color:var(--olive);letter-spacing:1px;">SEMANA 1</div>
+      <div style="font-size:22px;font-weight:700;">Marketing Digital</div>
+      <div style="font-size:15px;color:var(--ink-soft);line-height:1.4;flex:1;">Redes sociales y venta en línea para tu proyecto o negocio.</div>
+      <div style="font-size:14px;color:var(--ink-soft);">Cupos disponibles: <span id="w1-cupos">6</span></div>
+      <button id="w1-btn" data-key="w1" style="width: 100%; padding: 14px; font-size: 15px; font-weight: 700; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; cursor: pointer; background: var(--maroon); color: rgb(255, 255, 255);">Inscribirme al taller</button>
+    </div>
+    <div style="background:var(--paper);border:1px solid var(--line);padding:30px;display:flex;flex-direction:column;gap:14px;">
+      <div style="font-family:'Barlow Condensed';font-size:14px;font-weight:700;color:var(--olive);letter-spacing:1px;">SEMANA 2</div>
+      <div style="font-size:22px;font-weight:700;">Finanzas Personales</div>
+      <div style="font-size:15px;color:var(--ink-soft);line-height:1.4;flex:1;">Ahorro, presupuesto y primeros pasos hacia un emprendimiento.</div>
+      <div style="font-size:14px;color:var(--ink-soft);">Cupos disponibles: <span id="w2-cupos">6</span></div>
+      <button id="w2-btn" data-key="w2" style="width: 100%; padding: 14px; font-size: 15px; font-weight: 700; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; cursor: pointer; background: var(--maroon); color: rgb(255, 255, 255);">Inscribirme al taller</button>
+    </div>
+    <div style="background:var(--paper);border:1px solid var(--line);padding:30px;display:flex;flex-direction:column;gap:14px;">
+      <div style="font-family:'Barlow Condensed';font-size:14px;font-weight:700;color:var(--olive);letter-spacing:1px;">SEMANA 3</div>
+      <div style="font-size:22px;font-weight:700;">Fotografía de Producto</div>
+      <div style="font-size:15px;color:var(--ink-soft);line-height:1.4;flex:1;">Imagen profesional para vender mejor usando el celular.</div>
+      <div style="font-size:14px;color:var(--ink-soft);">Cupos disponibles: <span id="w3-cupos">6</span></div>
+      <button id="w3-btn" data-key="w3" style="width: 100%; padding: 14px; font-size: 15px; font-weight: 700; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; cursor: pointer; background: var(--maroon); color: rgb(255, 255, 255);">Inscribirme al taller</button>
+    </div>
+    <div style="background:var(--paper);border:1px solid var(--line);padding:30px;display:flex;flex-direction:column;gap:14px;">
+      <div style="font-family:'Barlow Condensed';font-size:14px;font-weight:700;color:var(--olive);letter-spacing:1px;">SEMANA 4</div>
+      <div style="font-size:22px;font-weight:700;">Taller Rotativo</div>
+      <div style="font-size:15px;color:var(--ink-soft);line-height:1.4;flex:1;">Tema mensual según demanda: oficios, cultura digital, idiomas.</div>
+      <div style="font-size:14px;color:var(--ink-soft);">Cupos disponibles: <span id="w4-cupos">6</span></div>
+      <button id="w4-btn" data-key="w4" style="width: 100%; padding: 14px; font-size: 15px; font-weight: 700; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; cursor: pointer; background: var(--maroon); color: rgb(255, 255, 255);">Inscribirme al taller</button>
+    </div>
+  </div>
+</section>
+
+<section id="promociones" style="background:var(--brown);color:#fff;padding:clamp(50px,7vw,90px) clamp(20px,4vw,64px);display:flex;flex-direction:column;gap:36px;">
+  <div>
+    <div style="font-family:'Barlow Condensed';letter-spacing:3px;text-transform:uppercase;color:#f0d9a0;font-weight:600;font-size:15px;">Alianza Sueño de Luna</div>
+    <h2 style="font-size:clamp(28px,3.2vw,40px);margin:12px 0 0;">Beneficios para tu jornada de trabajo</h2>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;">
+    <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);padding:32px;display:flex;flex-direction:column;gap:10px;">
+      <div style="font-family:'Barlow Condensed';font-size:44px;font-weight:700;color:#f0d9a0;">$79</div>
+      <div style="font-size:20px;font-weight:700;">Refill Workaholic</div>
+      <div style="font-size:15px;color:#f2ddd3;line-height:1.4;">Café ilimitado todo el día presentando tu tarjeta.</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);padding:32px;display:flex;flex-direction:column;gap:10px;">
+      <div style="font-family:'Barlow Condensed';font-size:44px;font-weight:700;color:#f0d9a0;">$179</div>
+      <div style="font-size:20px;font-weight:700;">Combo Emprendedor</div>
+      <div style="font-size:15px;color:#f2ddd3;line-height:1.4;">Panini + bebida a precio preferente.</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);padding:32px;display:flex;flex-direction:column;gap:10px;">
+      <div style="font-family:'Barlow Condensed';font-size:44px;font-weight:700;color:#f0d9a0;">10%</div>
+      <div style="font-size:20px;font-weight:700;">Descuento permanente</div>
+      <div style="font-size:15px;color:#f2ddd3;line-height:1.4;">Sobre el consumo general con tarjeta vigente.</div>
+    </div>
+  </div>
+  <div>
+    <button id="menu-toggle" style="background:var(--olive);color:#20260a;font-weight:700;padding:16px 30px;font-size:16px;border:none;cursor:pointer;">Ver menú / Pedir a la mesa</button>
+    <div id="menu-panel" hidden="" style="margin-top:20px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.2);padding:26px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;">
+      <div><div style="font-size:14px;font-weight:700;color:#f0d9a0;">BEBIDAS</div><div style="font-size:15px;color:#f2ddd3;margin-top:6px;">Café de especialidad, refrescos, tés fríos</div></div>
+      <div><div style="font-size:14px;font-weight:700;color:#f0d9a0;">PANINIS</div><div style="font-size:15px;color:#f2ddd3;margin-top:6px;">Pollo pesto, jamón serrano, vegetariano</div></div>
+      <div><div style="font-size:14px;font-weight:700;color:#f0d9a0;">POSTRES</div><div style="font-size:15px;color:#f2ddd3;margin-top:6px;">Repostería del día, galletas artesanales</div></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:clamp(50px,7vw,90px) clamp(20px,4vw,64px);display:flex;flex-direction:column;gap:30px;background:var(--paper);border-top:1px solid var(--line);">
+  <div>
+    <div style="font-family:'Barlow Condensed';letter-spacing:3px;text-transform:uppercase;color:var(--maroon);font-weight:600;font-size:15px;">Registro de acceso</div>
+    <h2 style="font-size:clamp(28px,3.2vw,40px);color:var(--brown);margin:12px 0 0;">Regístrate para usar el Cowork</h2>
+    <div style="font-size:15px;color:var(--ink-soft);margin-top:8px;">Abierto a todo público. Solo la Tarjeta "Jóvenes de la Nueva Historia" (más abajo) es exclusiva para jóvenes de 15 a 29 años.</div>
+  </div>
+  <div style="max-width:520px;">
+    <form id="registro-form" style="display:flex;flex-direction:column;gap:16px;">
+      <input id="reg-nombre" type="text" placeholder="Nombre completo" style="padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);">
+      <div style="display:flex;gap:16px;">
+        <input id="reg-edad" type="number" placeholder="Edad" aria-label="Edad" style="flex:1;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);">
+        <input id="reg-telefono" type="tel" placeholder="Teléfono / WhatsApp" aria-label="Teléfono o WhatsApp" style="flex:2;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);">
+      </div>
+      <div id="tutor-fields" hidden="" style="background:var(--cream);border:1px solid var(--gold);padding:16px;display:flex;flex-direction:column;gap:12px;">
+        <div style="font-size:14px;font-weight:700;color:var(--brown);">Por ser menor de edad, indica un tutor o contacto responsable</div>
+        <input id="reg-tutor-nombre" type="text" placeholder="Nombre del tutor" style="padding:14px;border:1px solid var(--line);font-size:15px;background:#fff;">
+        <input id="reg-tutor-telefono" type="tel" placeholder="Teléfono del tutor" style="padding:14px;border:1px solid var(--line);font-size:15px;background:#fff;">
+      </div>
+      <input id="reg-correo" type="email" placeholder="Correo electrónico" aria-label="Correo electrónico" style="padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);">
+      <select id="reg-perfil" style="padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);color:var(--ink-soft);">
+        <option value="">¿Cuál es tu perfil? (opcional)</option>
+        <option value="Estudiante">Estudiante</option>
+        <option value="Emprendedor">Emprendedor</option>
+        <option value="Profesionista">Profesionista</option>
+        <option value="Freelancer">Freelancer</option>
+        <option value="Buscando empleo">Buscando empleo</option>
+        <option value="Otro">Otro</option>
+      </select>
+      <input id="reg-folio" type="text" placeholder="Folio de tu Tarjeta Jóvenes de la Nueva Historia (opcional)" aria-label="Folio de tarjeta" style="padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);">
+      <div style="display:flex;flex-direction:column;gap:8px;"><label for="reg-recibir-info" style="font-size:14px;font-weight:700;color:var(--brown);">¿Te gustaría recibir información sobre novedades del COWORKING tu nueva historia?</label><select id="reg-recibir-info" style="padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);color:var(--ink-soft);"><option value="">Selecciona...</option><option value="Si">Sí</option><option value="No">No</option></select></div>
+      <div id="reg-error" hidden="" style="color:var(--maroon);font-weight:700;font-size:14px;"></div>
+      <button type="submit" style="background:var(--maroon);color:#fff;font-weight:700;padding:16px;font-size:16px;border:none;cursor:pointer;">Crear mi acceso</button>
+      <div id="reg-success" hidden="" style="color:var(--olive);font-weight:700;font-size:15px;"></div>
+    </form>
+  </div>
+</section>
+
+<section style="padding:clamp(50px,7vw,90px) clamp(20px,4vw,64px);display:flex;flex-direction:column;gap:30px;background:var(--cream);border-top:1px solid var(--line);">
+  <div>
+    <div style="font-family:'Barlow Condensed';letter-spacing:3px;text-transform:uppercase;color:var(--maroon);font-weight:600;font-size:15px;">Tarjeta Jóvenes de la Nueva Historia</div>
+    <h2 style="font-size:clamp(28px,3.2vw,40px);color:var(--brown);margin:12px 0 0;">Exclusiva para jóvenes de 15 a 29 años</h2>
+  </div>
+  <div id="tarjeta" style="max-width:520px;background:var(--gold);padding:36px;display:flex;flex-direction:column;gap:16px;justify-content:center;">
+    <div style="font-size:15px;font-weight:700;color:#2a1f1a;text-transform:uppercase;letter-spacing:1px;">¿Aún no tienes tu tarjeta?</div>
+    <div style="font-size:20px;font-weight:700;color:#2a1f1a;line-height:1.35;">Tramítala gratis con el Municipio y desbloquea tus beneficios en Sueño de Luna.</div>
+    <a href="https://piedrasnegras.tumunicipio.mx/ev/68b1fd93950ad92a5fb81255/66bfe739aeba1d0007cfaaf" target="_blank" rel="noopener" style="background:var(--maroon);color:#fff;font-weight:700;padding:16px 28px;font-size:16px;text-align:center;">Regístrate aquí →</a>
+  </div>
+</section>
+
+<section id="faq" style="padding:clamp(50px,7vw,90px) clamp(20px,4vw,64px);display:flex;flex-direction:column;gap:30px;background:var(--paper);border-top:1px solid var(--line);">
+  <div>
+    <div style="font-family:'Barlow Condensed';letter-spacing:3px;text-transform:uppercase;color:var(--maroon);font-weight:600;font-size:15px;">Preguntas frecuentes</div>
+    <h2 style="font-size:clamp(28px,3.2vw,40px);color:var(--brown);margin:12px 0 0;">Antes de tu primera visita</h2>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:0;border-top:1px solid var(--line);">
+    <div style="border-bottom:1px solid var(--line);padding:20px 0;">
+      <button class="faq-toggle" data-key="1" aria-expanded="false" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;font-size:18px;font-weight:700;color:var(--ink);padding:0;">¿Qué necesito para entrar?</button>
+      <div id="faq-answer-1" hidden="" style="font-size:16px;color:var(--ink-soft);margin-top:12px;line-height:1.5;">Solo tu identificación y, si ya la tienes, tu tarjeta "Jóvenes de la Nueva Historia". Si no tienes tarjeta, puedes registrarte el mismo día en recepción.</div>
+    </div>
+    <div style="border-bottom:1px solid var(--line);padding:20px 0;">
+      <button class="faq-toggle" data-key="2" aria-expanded="false" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;font-size:18px;font-weight:700;color:var(--ink);padding:0;">¿Cuál es la contraseña del wifi?</button>
+      <div id="faq-answer-2" hidden="" style="font-size:16px;color:var(--ink-soft);margin-top:12px;line-height:1.5;">Se entrega en recepción al registrar tu visita; la red se renueva periódicamente por seguridad.</div>
+    </div>
+    <div style="border-bottom:1px solid var(--line);padding:20px 0;">
+      <button class="faq-toggle" data-key="3" aria-expanded="false" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;font-size:18px;font-weight:700;color:var(--ink);padding:0;">¿Puedo llevar alimentos y bebidas?</button>
+      <div id="faq-answer-3" hidden="" style="font-size:16px;color:var(--ink-soft);margin-top:12px;line-height:1.5;">Bebidas con tapa sí; alimentos solo en las áreas designadas para no afectar el equipo ni los salones culturales.</div>
+    </div>
+    <div style="padding:20px 0;">
+      <button class="faq-toggle" data-key="4" aria-expanded="false" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;font-size:18px;font-weight:700;color:var(--ink);padding:0;">¿Qué pasa si llego tarde a mi reservación?</button>
+      <div id="faq-answer-4" hidden="" style="font-size:16px;color:var(--ink-soft);margin-top:12px;line-height:1.5;">El espacio se libera 15 minutos después de la hora reservada si no hay check-in en recepción.</div>
+    </div>
+  </div>
+</section>
+
+<section id="como-llegar" style="padding:clamp(50px,7vw,90px) clamp(20px,4vw,64px);display:flex;flex-direction:column;gap:30px;">
+  <div>
+    <div style="font-family:'Barlow Condensed';letter-spacing:3px;text-transform:uppercase;color:var(--maroon);font-weight:600;font-size:15px;">Cómo llegar</div>
+    <h2 style="font-size:clamp(28px,3.2vw,40px);color:var(--brown);margin:12px 0 0;">Rutas y estacionamiento</h2>
+  </div>
+  <div style="display:flex;gap:40px;flex-wrap:wrap;">
+    <div style="flex:1 1 280px;"><div style="font-size:14px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:1px;">Camión urbano</div><div style="font-size:17px;margin-top:6px;">Rutas con parada sobre Adolfo López Mateos, a media cuadra del acceso principal.</div></div>
+    <div style="flex:1 1 280px;"><div style="font-size:14px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:1px;">Estacionamiento</div><div style="font-size:17px;margin-top:6px;">Espacios gratuitos frente al edificio y sobre calles aledañas en Col. Roma.</div></div>
+    <div style="flex:1 1 280px;"><div style="font-size:14px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:1px;">Bicicleta</div><div style="font-size:17px;margin-top:6px;">Área para asegurar bicicletas en la entrada principal.</div></div>
+  </div>
+</section>
+
+<section id="historias" style="background:var(--cream);padding:clamp(50px,7vw,90px) clamp(20px,4vw,64px);display:flex;flex-direction:column;gap:30px;">
+  <div>
+    <div style="font-family:'Barlow Condensed';letter-spacing:3px;text-transform:uppercase;color:var(--maroon);font-weight:600;font-size:15px;">Comunidad</div>
+    <h2 style="font-size:clamp(28px,3.2vw,40px);color:var(--brown);margin:12px 0 0;">Historias del Cowork</h2>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;">
+    <div style="background:var(--paper);border:1px solid var(--line);padding:26px;display:flex;flex-direction:column;gap:14px;">
+      <div style="height:140px;overflow:hidden;"><img src="images/foto-taller-fotografia.png" alt="Taller de Fotografía de Producto" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+      <div style="font-size:16px;color:var(--ink);line-height:1.45;">"Aquí armé mi primer catálogo de producto para vender en línea."</div>
+      <div style="font-size:14px;color:var(--ink-soft);font-weight:700;">— Participante, taller de Fotografía de Producto</div>
+    </div>
+    <div style="background:var(--paper);border:1px solid var(--line);padding:26px;display:flex;flex-direction:column;gap:14px;">
+      <div style="height:140px;overflow:hidden;"><img src="images/foto-biblioteca-historias.png" alt="Jóvenes estudiando en la Biblioteca Computacional" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+      <div style="font-size:16px;color:var(--ink);line-height:1.45;">"Vengo todas las mañanas a estudiar antes de trabajar en la tarde."</div>
+      <div style="font-size:14px;color:var(--ink-soft);font-weight:700;">— Usuario frecuente, Biblioteca Computacional</div>
+    </div>
+    <div style="background:var(--paper);border:1px solid var(--line);padding:26px;display:flex;flex-direction:column;gap:14px;">
+      <div style="height:140px;overflow:hidden;"><img src="images/foto-auditorio.png" alt="Presentación de proyecto en el Auditorio Municipal" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+      <div style="font-size:16px;color:var(--ink);line-height:1.45;">"Presentamos nuestro proyecto en el auditorio frente a otros jóvenes."</div>
+      <div style="font-size:14px;color:var(--ink-soft);font-weight:700;">— Equipo emprendedor, Auditorio Municipal</div>
+    </div>
+  </div>
+</section>
+
+<section id="incidencias" style="padding:clamp(50px,7vw,90px) clamp(20px,4vw,64px);display:flex;flex-direction:column;gap:24px;">
+  <div>
+    <div style="font-family:'Barlow Condensed';letter-spacing:3px;text-transform:uppercase;color:var(--maroon);font-weight:600;font-size:15px;">Soporte</div>
+    <h2 style="font-size:clamp(28px,3.2vw,40px);color:var(--brown);margin:12px 0 0;">Reportar una incidencia</h2>
+  </div>
+  <div style="display:flex;gap:16px;flex-wrap:wrap;max-width:720px;">
+    <input id="incident-text" type="text" placeholder="Ej. Wifi caído en el auditorio, equipo dañado…" style="flex:1 1 320px;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--paper);">
+    <button id="incident-submit" style="background:var(--brown);color:#fff;font-weight:700;padding:16px 28px;font-size:15px;border:none;cursor:pointer;">Enviar reporte</button>
+  </div>
+  <div id="incident-success" hidden="" style="color:var(--olive);font-weight:700;font-size:15px;">Gracias, el personal de la Casa de la Cultura fue notificado.</div>
+</section>
+
+<footer style="background:var(--ink);color:#e8ddd2;padding:50px clamp(20px,4vw,64px) 30px;display:flex;flex-direction:column;gap:32px;">
+  <div style="display:flex;gap:40px;flex-wrap:wrap;">
+    <div style="flex:1 1 320px;height:200px;border:1px solid #453a32;">
+      <iframe title="Ubicación Casa de la Cultura Piedras Negras" src="https://maps.google.com/maps?q=Adolfo%20L%C3%B3pez%20Mateos%201334%2C%20Col.%20Roma%2C%20Piedras%20Negras%2C%20Coahuila&amp;output=embed" style="width:100%;height:100%;border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+    <div style="flex:2 1 420px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:24px;">
+      <div>
+        <div style="font-weight:700;color:#fff;font-size:15px;">Piedras Negras</div>
+        <div style="font-size:14px;color:#b8a99a;margin-top:6px;">Municipio · Tu Nueva Historia</div>
+      </div>
+      <div>
+        <div style="font-weight:700;color:#fff;font-size:15px;">Casa de la Cultura</div>
+        <div style="font-size:14px;color:#b8a99a;margin-top:6px;">Piedras Negras, Coahuila</div>
+      </div>
+      <div>
+        <div style="font-weight:700;color:#fff;font-size:15px;">Sueño de Luna</div>
+        <div style="font-size:14px;color:#b8a99a;margin-top:6px;">Cafetería de especialidad</div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:center;gap:40px;flex-wrap:wrap;padding:12px 0 8px;">
+    <img src="images/footer-logo-piedras-negras.png" alt="Piedras Negras" style="height:110px;object-fit:contain;">
+    <div style="width:1px;height:80px;background:#453a32;"></div>
+    <img src="images/footer-logo-casa-cultura.png" alt="Casa de la Cultura" style="height:100px;object-fit:contain;">
+  </div>
+  <div style="border-top:1px solid #453a32;padding-top:22px;font-size:13px;color:#9c8d7f;">© 2026 Municipio de Piedras Negras · Casa de la Cultura · Cowork: Tu Nueva Historia. Todos los derechos reservados. Aviso de privacidad disponible en oficinas del Municipio.</div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  // Reemplazar con la URL /exec real al publicar el Google Apps Script Web App
+  // conectado a la Hoja de cálculo "Cowork – Registro de Uso" (pestaña Visitas).
+  var SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/REEMPLAZAR_CON_TU_ID/exec';
+
+  var state = {
+    space: 'auditorio',
+    dateIndex: 0,
+    time: null,
+    confirmed: false,
+    confirmationCode: '',
+    occupiedHours: [],
+    availabilityLoading: false,
+    availabilityError: false,
+    workshops: { w1: 6, w2: 6, w3: 6, w4: 6 },
+    enrolled: { w1: false, w2: false, w3: false, w4: false },
+    menuOpen: false,
+    navOpen: false,
+    faq: { f1: false, f2: false, f3: false, f4: false }
+  };
+
+  function hash(n) {
+    var x = Math.sin(n) * 10000;
+    return x - Math.floor(x);
+  }
+
+  function spaceIndex(space) {
+    return { auditorio: 0, salon: 1, biblioteca: 2 }[space];
+  }
+
+  function isOccupied(spaceIdx, dateIdx, hour) {
+    var seed = spaceIdx * 97 + dateIdx * 31 + hour * 7;
+    return hash(seed) < 0.3;
+  }
+
+  function liveStatus(spIdx) {
+    var now = new Date();
+    var day = now.getDay();
+    var hour = now.getHours();
+    if (day === 0 || hour < 9 || hour >= 20) {
+      return { label: 'Cerrado', color: '#a89184' };
+    }
+    if (spIdx === 2) {
+      var free = 1 + Math.floor(hash(hour * 11 + 3) * 8);
+      return { label: free + ' de 8 lugares libres', color: free > 2 ? 'var(--olive)' : '#f0d9a0' };
+    }
+    var occ = isOccupied(spIdx, 0, hour);
+    return occ ? { label: 'Ocupado', color: '#e8b4b4' } : { label: 'Libre', color: 'var(--olive)' };
+  }
+
+  // ---- Fechas hábiles (próximos 5 días de lunes a sábado) ----
+  var dates = (function () {
+    var days = [];
+    var d = new Date();
+    while (days.length < 5) {
+      var day = d.getDay();
+      if (day !== 0) days.push(new Date(d));
+      d = new Date(d.getTime() + 86400000);
+    }
+    return days;
+  })();
+
+  var dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  var monthNames = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+
+  // ---- Navegación móvil ----
+  var navToggle = document.getElementById('nav-toggle');
+  var mainNav = document.getElementById('main-nav');
+
+  function applyMobile() {
+    var isMobile = window.innerWidth < 880;
+    navToggle.hidden = !isMobile;
+    if (isMobile) {
+      mainNav.hidden = !state.navOpen;
+      mainNav.style.cssText = 'position:absolute;top:100%;left:0;right:0;background:#fff;display:flex;flex-direction:column;gap:16px;padding:20px clamp(20px,4vw,64px);border-bottom:1px solid var(--line);font-size:16px;font-weight:600;';
+    } else {
+      mainNav.hidden = false;
+      mainNav.style.cssText = 'display:flex;gap:clamp(12px,2vw,28px);flex-wrap:wrap;font-size:15px;font-weight:600;color:var(--ink-soft);';
+    }
+  }
+  navToggle.addEventListener('click', function () {
+    state.navOpen = !state.navOpen;
+    navToggle.setAttribute('aria-expanded', String(state.navOpen));
+    applyMobile();
+  });
+  Array.prototype.forEach.call(mainNav.querySelectorAll('a'), function (a) {
+    a.addEventListener('click', function () { state.navOpen = false; applyMobile(); });
+  });
+  window.addEventListener('resize', applyMobile);
+  applyMobile();
+
+  // ---- Botones flotantes (visita + WhatsApp): solo aparecen tras bajar un poco ----
+  var floatingButtons = document.getElementById('floating-buttons');
+  function applyScrollButtons() {
+    floatingButtons.hidden = window.scrollY <= window.innerHeight * 0.6;
+  }
+  applyScrollButtons();
+  window.addEventListener('scroll', applyScrollButtons, { passive: true });
+
+  // ---- Disponibilidad en vivo (hero) ----
+  function renderLiveStatus() {
+    ['auditorio', 'salon', 'biblioteca'].forEach(function (key, idx) {
+      var st = liveStatus(idx);
+      var el = document.getElementById('live-' + key);
+      el.textContent = st.label;
+      el.style.color = st.color;
+    });
+  }
+  renderLiveStatus();
+  setInterval(renderLiveStatus, 60000);
+
+  // ---- Reservar espacio (disponibilidad real vía Hoja de cálculo) ----
+  var spaceButtonsEl = document.getElementById('space-buttons');
+  var dateButtonsEl = document.getElementById('date-buttons');
+  var timeButtonsEl = document.getElementById('time-buttons');
+  var timeStatusEl = document.getElementById('time-status');
+  var availabilityCache = {}; // 'espacio|fecha' -> [horas ocupadas]
+
+  function isoDate(d) {
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1);
+    if (m.length < 2) m = '0' + m;
+    var dd = String(d.getDate());
+    if (dd.length < 2) dd = '0' + dd;
+    return y + '-' + m + '-' + dd;
+  }
+
+  function fetchOcupadas(espacio, fechaStr) {
+    var url = WEBHOOK_URL + '?accion=disponibilidad&espacio=' + encodeURIComponent(espacio) + '&fecha=' + encodeURIComponent(fechaStr);
+    return fetch(url).then(function (res) { return res.json(); }).then(function (json) {
+      return (json && json.ocupadas) ? json.ocupadas.map(Number) : [];
+    });
+  }
+
+  function refreshAvailability() {
+    var fechaStr = isoDate(dates[state.dateIndex]);
+    var key = state.space + '|' + fechaStr;
+    if (availabilityCache[key]) {
+      state.occupiedHours = availabilityCache[key];
+      state.availabilityLoading = false;
+      state.availabilityError = false;
+      renderTimeButtons();
+      return;
+    }
+    state.availabilityLoading = true;
+    state.availabilityError = false;
+    renderTimeButtons();
+    fetchOcupadas(state.space, fechaStr).then(function (ocupadas) {
+      availabilityCache[key] = ocupadas;
+      state.occupiedHours = ocupadas;
+      state.availabilityLoading = false;
+      renderTimeButtons();
+    }).catch(function () {
+      state.occupiedHours = [];
+      state.availabilityLoading = false;
+      state.availabilityError = true;
+      renderTimeButtons();
+    });
+  }
+
+  function renderSpaceButtons() {
+    Array.prototype.forEach.call(spaceButtonsEl.querySelectorAll('button'), function (btn) {
+      var active = btn.dataset.space === state.space;
+      btn.style.border = '1px solid ' + (active ? 'var(--maroon)' : 'var(--line)');
+      btn.style.background = active ? 'var(--maroon)' : '#fff';
+      btn.style.color = active ? '#fff' : 'var(--ink)';
+    });
+  }
+  spaceButtonsEl.addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-space]');
+    if (!btn) return;
+    state.space = btn.dataset.space;
+    state.time = null;
+    state.confirmed = false;
+    renderSpaceButtons();
+    renderConfirmBox();
+    refreshAvailability();
+  });
+
+  function renderDateButtons() {
+    dateButtonsEl.innerHTML = '';
+    dates.forEach(function (dt, i) {
+      var active = state.dateIndex === i;
+      var btn = document.createElement('button');
+      btn.textContent = dayNames[dt.getDay()] + ' ' + dt.getDate() + ' ' + monthNames[dt.getMonth()];
+      btn.style.cssText = 'padding:12px 18px;font-size:14px;font-weight:700;border:1px solid ' + (active ? 'var(--maroon)' : 'var(--line)') + ';background:' + (active ? 'var(--maroon)' : '#fff') + ';color:' + (active ? '#fff' : 'var(--ink)') + ';cursor:pointer;';
+      btn.addEventListener('click', function () {
+        state.dateIndex = i;
+        state.time = null;
+        state.confirmed = false;
+        renderDateButtons();
+        renderConfirmBox();
+        refreshAvailability();
+      });
+      dateButtonsEl.appendChild(btn);
+    });
+  }
+
+  function renderTimeButtons() {
+    timeButtonsEl.innerHTML = '';
+    if (state.availabilityLoading) {
+      timeStatusEl.textContent = 'Cargando disponibilidad en tiempo real…';
+      return;
+    }
+    timeStatusEl.textContent = state.availabilityError
+      ? 'No se pudo cargar la disponibilidad en tiempo real; confirma en recepción antes de presentarte.'
+      : '';
+    [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19].forEach(function (h) {
+      var occupied = state.occupiedHours.indexOf(h) !== -1;
+      var selected = state.time === h;
+      var bg = '#fff', color = 'var(--ink)', border = 'var(--line)', statusLabel = 'Disponible';
+      if (occupied) { bg = '#efe6e0'; color = '#a89184'; border = '#efe6e0'; statusLabel = 'Ocupado'; }
+      if (selected) { bg = 'var(--olive)'; color = '#20260a'; border = 'var(--olive)'; statusLabel = 'Seleccionado'; }
+      var btn = document.createElement('button');
+      btn.disabled = occupied;
+      btn.style.cssText = 'padding:16px 10px;font-size:15px;font-weight:700;border:1px solid ' + border + ';background:' + bg + ';color:' + color + ';cursor:' + (occupied ? 'not-allowed' : 'pointer') + ';';
+      btn.innerHTML = '<span>' + h + ':00 – ' + (h + 1) + ':00</span><span style="display:block;font-size:12px;font-weight:600;margin-top:4px;">' + statusLabel + '</span>';
+      btn.addEventListener('click', function () {
+        if (occupied) return;
+        state.time = h;
+        state.confirmed = false;
+        renderTimeButtons();
+        renderConfirmBox();
+      });
+      timeButtonsEl.appendChild(btn);
+    });
+  }
+
+  var spaceLabels = { auditorio: 'Auditorio Municipal', salon: 'Salón de Usos Múltiples', biblioteca: 'Biblioteca Computacional' };
+
+  function renderConfirmBox() {
+    var confirmBox = document.getElementById('confirm-box');
+    var confirmedBox = document.getElementById('confirmed-box');
+    var showConfirm = state.time !== null && !state.confirmed;
+    confirmBox.hidden = !showConfirm;
+    if (showConfirm) {
+      document.getElementById('confirm-space').textContent = spaceLabels[state.space];
+      document.getElementById('confirm-date').textContent = dayNames[dates[state.dateIndex].getDay()] + ' ' + dates[state.dateIndex].getDate() + ' ' + monthNames[dates[state.dateIndex].getMonth()];
+      document.getElementById('confirm-time').textContent = state.time + ':00 – ' + (state.time + 1) + ':00';
+    }
+    confirmedBox.hidden = !state.confirmed;
+    if (state.confirmed) {
+      document.getElementById('confirmation-code').textContent = state.confirmationCode;
+      var qrGrid = document.getElementById('qr-grid');
+      qrGrid.innerHTML = '';
+      var code = state.confirmationCode;
+      for (var i = 0; i < 100; i++) {
+        var seed = (code ? code.length : 1) * (i + 7) + i * 13;
+        var on = hash(seed) > 0.5;
+        var cell = document.createElement('div');
+        cell.style.cssText = 'width:10px;height:10px;background:' + (on ? 'var(--maroon)' : '#f2ede2') + ';';
+        qrGrid.appendChild(cell);
+      }
+    }
+  }
+
+  document.getElementById('confirm-reservation').addEventListener('click', function () {
+    var nombre = document.getElementById('reserva-nombre').value.trim();
+    var telefono = document.getElementById('reserva-telefono').value.trim();
+    var correo = document.getElementById('reserva-correo').value.trim();
+    var errorEl = document.getElementById('reserva-error');
+    var btn = document.getElementById('confirm-reservation');
+
+    function showReservaError(msg) { errorEl.textContent = msg; errorEl.hidden = false; }
+
+    if (!nombre) return showReservaError('Ingresa tu nombre completo.');
+    if (!telefono) return showReservaError('Ingresa tu teléfono o WhatsApp.');
+    errorEl.hidden = true;
+
+    var fechaStr = isoDate(dates[state.dateIndex]);
+    var key = state.space + '|' + fechaStr;
+    btn.disabled = true;
+    btn.textContent = 'Verificando disponibilidad…';
+
+    // Se vuelve a checar disponibilidad justo antes de confirmar, para evitar
+    // que dos personas reserven el mismo horario al mismo tiempo.
+    fetchOcupadas(state.space, fechaStr).then(function (ocupadas) {
+      if (ocupadas.indexOf(state.time) !== -1) {
+        availabilityCache[key] = ocupadas;
+        state.occupiedHours = ocupadas;
+        state.time = null;
+        btn.disabled = false;
+        btn.textContent = 'Confirmar reservación';
+        renderTimeButtons();
+        renderConfirmBox();
+        return showReservaError('Ese horario acaba de ocuparse. Elige otro disponible.');
+      }
+
+      var spCode = { auditorio: 'AUD', salon: 'SUM', biblioteca: 'BIB' }[state.space];
+      var code = 'CW-' + spCode + '-' + state.dateIndex + state.time;
+
+      sendRegistroTarjeta({
+        secret: WEBHOOK_SECRET,
+        tipo: 'reservacion',
+        espacio: spaceLabels[state.space],
+        fecha: fechaStr,
+        hora: state.time,
+        nombre: nombre,
+        telefono: telefono,
+        correo: correo,
+        folio: code
+      });
+
+      // Marcamos el horario como ocupado localmente sin esperar el refetch.
+      var updated = ocupadas.concat([state.time]);
+      availabilityCache[key] = updated;
+      state.occupiedHours = updated;
+
+      state.confirmed = true;
+      state.confirmationCode = code;
+      state.time = null; // ya no está "seleccionado": ahora se ve como ocupado, como cualquier otra reservación
+      btn.disabled = false;
+      btn.textContent = 'Confirmar reservación';
+      renderTimeButtons();
+      renderConfirmBox();
+    }).catch(function () {
+      btn.disabled = false;
+      btn.textContent = 'Confirmar reservación';
+      showReservaError('No se pudo verificar la disponibilidad. Intenta de nuevo.');
+    });
+  });
+
+  function renderReservar() {
+    renderSpaceButtons();
+    renderDateButtons();
+    renderConfirmBox();
+  }
+
+  // ---- Capacitaciones ----
+  var workshopKeys = ['w1', 'w2', 'w3', 'w4'];
+  function renderWorkshops() {
+    workshopKeys.forEach(function (key) {
+      var enrolled = state.enrolled[key];
+      var cupos = state.workshops[key];
+      var disabled = enrolled || cupos <= 0;
+      document.getElementById(key + '-cupos').textContent = cupos;
+      var btn = document.getElementById(key + '-btn');
+      btn.disabled = disabled;
+      btn.style.cursor = disabled ? 'default' : 'pointer';
+      btn.style.background = enrolled ? 'var(--olive)' : (cupos <= 0 ? '#ddd4c7' : 'var(--maroon)');
+      btn.style.color = enrolled ? '#20260a' : (cupos <= 0 ? '#8a7c6d' : '#fff');
+      btn.textContent = enrolled ? 'Inscrito ✓' : (cupos <= 0 ? 'Sin cupo' : 'Inscribirme al taller');
+    });
+  }
+  workshopKeys.forEach(function (key) {
+    document.getElementById(key + '-btn').addEventListener('click', function () {
+      if (state.enrolled[key] || state.workshops[key] <= 0) return;
+      state.workshops[key] -= 1;
+      state.enrolled[key] = true;
+      renderWorkshops();
+    });
+  });
+
+  // ---- Promociones / menú ----
+  var menuToggle = document.getElementById('menu-toggle');
+  var menuPanel = document.getElementById('menu-panel');
+  menuToggle.addEventListener('click', function () {
+    state.menuOpen = !state.menuOpen;
+    menuPanel.hidden = !state.menuOpen;
+    menuToggle.textContent = state.menuOpen ? 'Ocultar menú' : 'Ver menú / Pedir a la mesa';
+  });
+
+  // ---- FAQ ----
+  Array.prototype.forEach.call(document.querySelectorAll('.faq-toggle'), function (btn) {
+    btn.addEventListener('click', function () {
+      var key = btn.dataset.key;
+      var answer = document.getElementById('faq-answer-' + key);
+      var open = answer.hidden;
+      answer.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+    });
+  });
+
+  // ---- Registro de acceso (público general, sin restricción de edad) ----
+  var regEdad = document.getElementById('reg-edad');
+  var tutorFields = document.getElementById('tutor-fields');
+  function isMinor(ageValue) {
+    var age = parseInt(ageValue, 10);
+    return !isNaN(age) && age >= 0 && age < 18;
+  }
+  function updateTutorVisibility() {
+    tutorFields.hidden = !isMinor(regEdad.value);
+  }
+  regEdad.addEventListener('input', updateTutorVisibility);
+
+  var WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycby-bYBeV5KB0d5D5oCXTuN2bbRA7WocGc_RUVZ-n9N_5xJQRo6Akwi6AZDPOK_jBTTD/exec';
+  var WEBHOOK_SECRET = 'COWORK_2026_SECRET';
+
+  function sendRegistroTarjeta(data) {
+    fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(data)
+    }).catch(function (err) {
+      console.error('No se pudo sincronizar el registro:', err);
+    });
+  }
+
+  document.getElementById('registro-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var nombre = document.getElementById('reg-nombre').value.trim();
+    var age = parseInt(regEdad.value, 10);
+    var telefono = document.getElementById('reg-telefono').value.trim();
+    var correo = document.getElementById('reg-correo').value.trim();
+    var perfil = document.getElementById('reg-perfil').value;
+    var folio = document.getElementById('reg-folio').value.trim();
+    var recibirInfo = document.getElementById('reg-recibir-info').value;
+    var tutorNombre = document.getElementById('reg-tutor-nombre').value.trim();
+    var tutorTelefono = document.getElementById('reg-tutor-telefono').value.trim();
+    var errorEl = document.getElementById('reg-error');
+    var successEl = document.getElementById('reg-success');
+    successEl.hidden = true;
+
+    function showError(msg) { errorEl.textContent = msg; errorEl.hidden = false; }
+
+    if (!nombre) return showError('Ingresa tu nombre completo.');
+    if (isMinor(regEdad.value) && (!tutorNombre || !tutorTelefono)) return showError('Al ser menor de edad, indica los datos de un tutor.');
+
+    errorEl.hidden = true;
+
+    sendRegistroTarjeta({
+      secret: WEBHOOK_SECRET,
+      nombre: nombre,
+      edad: isNaN(age) ? '' : age,
+      telefono: telefono,
+      correo: correo,
+      perfil: perfil,
+      estatus: folio ? 'Si' : 'Pendiente',
+      recibirInfo: recibirInfo,
+      notas: folio ? ('Folio tarjeta: ' + folio) : ''
+    });
+
+    successEl.textContent = '¡Listo, ' + nombre + '! Tu acceso quedó registrado.';
+    successEl.hidden = false;
+  });
+
+  // ---- Reportar incidencia ----
+  document.getElementById('incident-submit').addEventListener('click', function () {
+    var input = document.getElementById('incident-text');
+    if (!input.value.trim()) return;
+    input.value = '';
+    document.getElementById('incident-success').hidden = false;
+  });
+
+  // ---- Registrar visita (contador de uso -> Google Sheets) ----
+  var visitPanel = document.getElementById('visit-panel');
+  document.getElementById('visit-panel-toggle').addEventListener('click', function () {
+    visitPanel.hidden = !visitPanel.hidden;
+  });
+
+  document.getElementById('visit-submit').addEventListener('click', function () {
+    var nombre = document.getElementById('visit-nombre').value.trim();
+    var edad = document.getElementById('visit-edad').value;
+    var folio = document.getElementById('visit-folio').value.trim();
+    var espacio = document.getElementById('visit-espacio').value;
+    var honeypot = document.getElementById('visit-honeypot').value;
+    var errorEl = document.getElementById('visit-error');
+    var successEl = document.getElementById('visit-success');
+    successEl.hidden = true;
+    errorEl.hidden = true;
+
+    if (honeypot) return; // trampa anti-bot: si se llenó, se ignora en silencio
+
+    if (!nombre || !edad) {
+      errorEl.textContent = 'Ingresa al menos tu nombre y edad.';
+      errorEl.hidden = false;
+      return;
+    }
+
+    var payload = {
+      fecha: new Date().toISOString().slice(0, 10),
+      hora: new Date().toTimeString().slice(0, 5),
+      nombre: nombre, edad: edad, folio: folio, espacio: espacio
+    };
+
+    fetch(SHEET_WEBAPP_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(function () { /* no-cors: no se puede leer la respuesta; se asume envío */ })
+      .finally(function () {
+        document.getElementById('visit-nombre').value = '';
+        document.getElementById('visit-edad').value = '';
+        document.getElementById('visit-folio').value = '';
+        document.getElementById('visit-espacio').value = 'auditorio';
+        document.getElementById('visit-honeypot').value = '';
+        successEl.hidden = false;
+      });
+  });
+
+  function renderAll() {
+    renderReservar();
+    refreshAvailability();
+    renderWorkshops();
+  }
+
+  renderAll();
+})();
+</script>
+
+
+</body></html>
