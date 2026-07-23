@@ -722,16 +722,27 @@
       var spCode = { auditorio: 'AUD', salon: 'SUM', biblioteca: 'BIB' }[state.space];
       var code = 'CW-' + spCode + '-' + state.dateIndex + state.time;
 
-      sendRegistroTarjeta({
-        secret: WEBHOOK_SECRET,
-        tipo: 'reservacion',
-        espacio: spaceLabels[state.space],
-        fecha: fechaStr,
-        hora: state.time,
-        nombre: nombre,
-        telefono: telefono,
-        correo: correo,
-        folio: code
+      var horarioTxt = state.time + ':00 – ' + (state.time + 1) + ':00';
+      fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          secret: WEBHOOK_SECRET,
+          tipo: 'reserva',
+          espacio: spaceLabels[state.space],
+          fecha: fechaStr,
+          horario: horarioTxt,
+          nombre: nombre,
+          telefono: telefono,
+          correo: correo
+        })
+      }).then(function (r) { return r.json(); }).then(function (res) {
+        if (res && res.ok && res.folio) {
+          state.confirmationCode = res.folio;
+          renderConfirmBox();
+        }
+      }).catch(function (err) {
+        console.error('No se pudo sincronizar la reservación:', err);
       });
 
       // Marcamos el horario como ocupado localmente sin esperar el refetch.
