@@ -73,9 +73,9 @@
     <div style="font-weight:700;font-size:17px;color:var(--brown);">Registra tu visita de hoy</div>
     <input id="visit-telefono" type="tel" placeholder="Teléfono o WhatsApp" style="padding:12px;border:1px solid var(--line);font-size:15px;">
     <select id="visit-espacio" style="padding:12px;border:1px solid var(--line);font-size:15px;">
-      <option value="Salón Usos Múltiples">Salón Usos Múltiples</option>
-      <option value="Auditorio">Auditorio</option>
-      <option value="Cómputo">Cómputo</option>
+      <option value="Auditorio Municipal">Auditorio Municipal</option>
+      <option value="Salón de Usos Múltiples">Salón de Usos Múltiples</option>
+      <option value="Biblioteca Computacional">Biblioteca Computacional</option>
       <option value="Cafetería">Cafetería</option>
       <option value="Uso de las instalaciones">Uso de las instalaciones</option>
     </select>
@@ -569,12 +569,35 @@
   <div>
     <div style="font-family:'Barlow Condensed';letter-spacing:3px;text-transform:uppercase;color:var(--maroon);font-weight:600;font-size:15px;">Soporte</div>
     <h2 style="font-size:clamp(28px,3.2vw,40px);color:var(--brown);margin:12px 0 0;">Reportar una incidencia</h2>
+    <p style="font-size:clamp(15px,1.4vw,17px);color:var(--ink-soft);line-height:1.5;max-width:640px;margin:12px 0 0;">¿Algo no funciona o necesita atención? Repórtalo y el personal de la Casa de la Cultura será notificado.</p>
   </div>
-  <div style="display:flex;gap:16px;flex-wrap:wrap;max-width:720px;">
-    <input id="incident-text" type="text" placeholder="Ej. Wifi caído en el auditorio, equipo dañado…" style="flex:1 1 320px;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--paper);">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;max-width:760px;">
+    <select id="incident-espacio" style="padding:16px;border:1px solid var(--line);font-size:16px;background:var(--paper);">
+      <option value="">Espacio…</option>
+      <option value="Auditorio Municipal">Auditorio Municipal</option>
+      <option value="Salón de Usos Múltiples">Salón de Usos Múltiples</option>
+      <option value="Biblioteca Computacional">Biblioteca Computacional</option>
+      <option value="Cafetería">Cafetería</option>
+      <option value="Uso de las instalaciones">Uso de las instalaciones</option>
+    </select>
+    <select id="incident-tipo" style="padding:16px;border:1px solid var(--line);font-size:16px;background:var(--paper);">
+      <option value="">Tipo de incidencia…</option>
+      <option value="Equipo/Cómputo">Equipo/Cómputo</option>
+      <option value="Wifi/Internet">Wifi/Internet</option>
+      <option value="Mobiliario">Mobiliario</option>
+      <option value="Limpieza">Limpieza</option>
+      <option value="Seguridad">Seguridad</option>
+      <option value="Otro">Otro</option>
+    </select>
+    <input id="incident-nombre" type="text" placeholder="Tu nombre (opcional)" style="padding:16px;border:1px solid var(--line);font-size:16px;background:var(--paper);">
+    <input id="incident-contacto" type="text" placeholder="Teléfono o correo (opcional)" style="padding:16px;border:1px solid var(--line);font-size:16px;background:var(--paper);">
+  </div>
+  <div style="display:flex;gap:16px;flex-wrap:wrap;max-width:760px;">
+    <input id="incident-text" type="text" placeholder="Describe la incidencia (obligatorio). Ej. Wifi caído en el auditorio, equipo dañado…" style="flex:1 1 320px;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--paper);">
     <button id="incident-submit" style="background:var(--brown);color:#fff;font-weight:700;padding:16px 28px;font-size:15px;border:none;cursor:pointer;">Enviar reporte</button>
   </div>
-  <div id="incident-success" hidden="" style="color:var(--olive);font-weight:700;font-size:15px;">Gracias, el personal de la Casa de la Cultura fue notificado.</div>
+  <div id="incident-success" hidden style="color:var(--gold);font-weight:700;font-size:15px;">Gracias, el personal de la Casa de la Cultura fue notificado.</div>
+  <div id="incident-error" hidden style="color:var(--maroon);font-weight:700;font-size:15px;"></div>
 </section>
 
 <footer style="background:var(--ink);color:#e8ddd2;padding:50px clamp(20px,4vw,64px) 30px;display:flex;flex-direction:column;gap:32px;">
@@ -1094,10 +1117,58 @@
 
   // ---- Reportar incidencia ----
   document.getElementById('incident-submit').addEventListener('click', function () {
-    var input = document.getElementById('incident-text');
-    if (!input.value.trim()) return;
-    input.value = '';
-    document.getElementById('incident-success').hidden = false;
+    var descripcion = document.getElementById('incident-text').value.trim();
+    var espacio = document.getElementById('incident-espacio').value;
+    var tipoIncidencia = document.getElementById('incident-tipo').value;
+    var nombre = document.getElementById('incident-nombre').value.trim();
+    var contacto = document.getElementById('incident-contacto').value.trim();
+    var successEl = document.getElementById('incident-success');
+    var errorEl = document.getElementById('incident-error');
+    var btn = document.getElementById('incident-submit');
+    successEl.hidden = true;
+    errorEl.hidden = true;
+
+    if (!descripcion) {
+      errorEl.textContent = 'Describe la incidencia para poder enviarla.';
+      errorEl.hidden = false;
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Enviando…';
+
+    fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        secret: WEBHOOK_SECRET,
+        tipo: 'incidencia',
+        espacio: espacio,
+        tipoIncidencia: tipoIncidencia,
+        descripcion: descripcion,
+        nombre: nombre,
+        contacto: contacto
+      })
+    }).then(function (res) { return res.json(); }).then(function (data) {
+      btn.disabled = false;
+      btn.textContent = 'Enviar reporte';
+      if (data && data.ok) {
+        successEl.hidden = false;
+        document.getElementById('incident-text').value = '';
+        document.getElementById('incident-espacio').value = '';
+        document.getElementById('incident-tipo').value = '';
+        document.getElementById('incident-nombre').value = '';
+        document.getElementById('incident-contacto').value = '';
+      } else {
+        errorEl.textContent = 'No se pudo enviar el reporte. Intenta de nuevo.';
+        errorEl.hidden = false;
+      }
+    }).catch(function () {
+      btn.disabled = false;
+      btn.textContent = 'Enviar reporte';
+      errorEl.textContent = 'No se pudo enviar el reporte. Intenta de nuevo.';
+      errorEl.hidden = false;
+    });
   });
 
   // ---- Registrar visita (contador de uso -> Google Sheets) ----
