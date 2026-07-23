@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Check-in COWORK · Acceso del personal</title>
+<style>
+  :root{--vino:#7a1f2b;--vino2:#5c1620;--crema:#f3ede4;--ok:#1b7f3b;--warn:#b8860b;--err:#a12028;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--crema);color:#231a17}
+  header{background:var(--vino);color:#fff;padding:16px 20px;text-align:center}
+  header h1{margin:0;font-size:18px;letter-spacing:.5px}
+  header p{margin:4px 0 0;font-size:12px;opacity:.85}
+  main{max-width:520px;margin:0 auto;padding:20px}
+  .card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 6px 24px rgba(0,0,0,.08);margin-bottom:18px}
+  label{display:block;font-size:13px;font-weight:600;margin:12px 0 6px}
+  input,select,button{width:100%;padding:13px;font-size:16px;border-radius:10px;border:1px solid #d8cfc4;font-family:inherit}
+  button{background:var(--vino);color:#fff;border:none;font-weight:700;cursor:pointer;margin-top:14px}
+  button:active{background:var(--vino2)}
+  button.ghost{background:#efe7db;color:var(--vino);}
+  .hidden{display:none!important}
+  #reader{width:100%;border-radius:12px;overflow:hidden;background:#000;min-height:60px}
+  .result{border-radius:14px;padding:22px;text-align:center;margin-top:8px;animation:pop .25s ease}
+  @keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+  .result.ok{background:#e7f6ec;border:2px solid var(--ok)}
+  .result.warn{background:#fdf5e0;border:2px solid var(--warn)}
+  .result.err{background:#fbe9ea;border:2px solid var(--err)}
+  .result .big{font-size:40px;line-height:1}
+  .result .name{font-size:22px;font-weight:800;margin:8px 0 2px}
+  .result .meta{font-size:14px;opacity:.85}
+  .muted{font-size:12px;color:#8a7d70;text-align:center;margin-top:6px}
+  .row{display:flex;gap:10px}
+  .row>*{flex:1}
+</style>
+</head>
+<body>
+<header>
+  <h1>COWORK · Check-in de acceso</h1>
+  <p>Casa de la Cultura · Piedras Negras, Coah.</p>
+</header>
+<main>
+
+  <!-- PASO 1: PIN -->
+  <section id="gate" class="card">
+    <label for="pin">PIN de personal</label>
+    <input id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="****" maxlength="8">
+    <label for="espacio">Espacio al que ingresa</label>
+    <select id="espacio">
+      <option value="Salón Usos Múltiples">Salón Usos Múltiples</option>
+      <option value="Auditorio">Auditorio</option>
+      <option value="Cómputo">Cómputo</option>
+      <option value="Cafetería">Cafetería</option>
+      <option value="Uso de las instalaciones">Uso de las instalaciones</option>
+    </select>
+    <button id="enter">Iniciar check-in</button>
+    <p class="muted">Solo personal autorizado.</p>
+  </section>
+
+  <!-- PASO 2: SCANNER -->
+  <section id="scanner" class="card hidden">
+    <div class="row" style="align-items:center;margin-bottom:8px">
+      <div style="flex:2"><strong id="espacio-label"></strong></div>
+      <div style="flex:1"><button class="ghost" id="change" style="margin:0;padding:8px">Cambiar</button></div>
+    </div>
+    <div id="reader"></div>
+    <div id="result-holder"></div>
+    <label for="manual">O ingresa el folio manualmente</label>
+    <div class="row">
+      <input id="manual" type="text" placeholder="CWK-000123" autocomplete="off">
+      <button id="manual-btn" style="margin-top:0;flex:0 0 40%">Registrar</button>
+    </div>
+    <p class="muted" id="status"></p>
+  </section>
+
+</main>
+
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+(function(){
+  var SECRET = 'COWORK_2026_SECRET';
+  var PIN = '1234';
+  var WEBHOOK = null;
+  var espacio = '';
+  var busy = false;
+  var lastFolio = '';
+  var lastTime = 0;
+
+  function $(id){return document.getElementById(id);}
+
+  // Cargar la URL del webhook desde index.html (fuente única de verdad)
+  function loadWebhook(){
+    return fetch('index.html', {cache:'no-store'})
+      .then(function(r){return r.text();})
+      .then(function(t){
+        var m = t.match(/var WEBHOOK_URL\s*=\s*'([^']+)'/);
+        if(m){ WEBHOOK = m[1]; }
+      }).catch(function(){});
+  }
+  loadWebhook();
+
+  $('enter').addEventListener('click', function(){
+    if($('pin').value.trim() !== PIN){ alert('PIN incorrecto'); return; }
+    espacio = $('espacio').value;
+    $('espacio-label').textContent = 'Espacio: ' + espacio;
+    $('gate').classList.add('hidden');
+    $('scanner').classList.remove('hidden');
+    startScanner();
+  });
+
+  $('change').addEventListener('click', function(){
+    $('scanner').classList.add('hidden');
+    $('gate').classList.remove('hidden');
+    stopScanner();
+  });
+
+  var qr = null;
+  function startScanner(){
+    if(typeof Html5Qrcode === 'undefined'){ $('status').textContent='No se pudo cargar el lector de cámara. Usa la entrada manual.'; return; }
+    qr = new Html5Qrcode('reader');
+    qr.start({facingMode:'environment'}, {fps:10, qrbox:220}, onScan, function(){})
+      .catch(function(e){ $('status').textContent='Cámara no disponible: usa la entrada manual.'; });
+  }
+  function stopScanner(){ if(qr){ qr.stop().catch(function(){}); qr=null; } }
+
+  function extractFolio(text){
+    // El QR puede contener el folio directo (CWK-000123) o una URL con ?folio=
+    var m = text.match(/CWK-\d{6}/i);
+    if(m) return m[0].toUpperCase();
+    return text.trim();
+  }
+
+  function onScan(text){
+    var folio = extractFolio(text);
+    var now = Date.now();
+    if(busy) return;
+    // evitar dobles lecturas del mismo folio en 3s
+    if(folio === lastFolio && (now - lastTime) < 3000) return;
+    lastFolio = folio; lastTime = now;
+    doCheckin(folio);
+  }
+
+  $('manual-btn').addEventListener('click', function(){
+    var f = extractFolio($('manual').value);
+    if(!f){ return; }
+    doCheckin(f);
+    $('manual').value='';
+  });
+
+  function doCheckin(folio){
+    if(busy) return;
+    busy = true;
+    $('status').textContent = 'Registrando ' + folio + '...';
+    var send = WEBHOOK ? Promise.resolve() : loadWebhook();
+    send.then(function(){
+      if(!WEBHOOK){ throw new Error('sin webhook'); }
+      return fetch(WEBHOOK, {
+        method:'POST',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify({tipo:'checkin', secret:SECRET, pin:PIN, folio:folio, espacio:espacio})
+      });
+    })
+    .then(function(r){return r.json();})
+    .then(function(res){ render(res, folio); })
+    .catch(function(){ render({ok:false, error:'Error de conexión'}, folio); })
+    .finally(function(){ setTimeout(function(){busy=false;}, 900); });
+  }
+
+  function render(res, folio){
+    var h = $('result-holder');
+    var html='';
+    if(res.ok){
+      var cls = res.yaEntroHoy ? 'warn' : 'ok';
+      var icon = res.yaEntroHoy ? '⚠️' : '✅';
+      var msg = res.yaEntroHoy ? 'Ya había entrado hoy' : 'Acceso autorizado';
+      html = '<div class="result '+cls+'"><div class="big">'+icon+'</div>'+
+             '<div class="name">'+ (res.nombre||folio) +'</div>'+
+             '<div class="meta">'+ msg +' · '+ (res.espacio||espacio) +' · '+ (res.hora||'') +'</div>'+
+             '<div class="meta">Folio: '+ (res.folio||folio) +'</div></div>';
+    } else {
+      html = '<div class="result err"><div class="big">⛔</div>'+
+             '<div class="name">No autorizado</div>'+
+             '<div class="meta">'+ (res.error||'Folio no válido') +'</div>'+
+             '<div class="meta">Folio: '+ folio +'</div></div>';
+    }
+    h.innerHTML = html;
+    $('status').textContent = '';
+  }
+})();
+</script>
+</body>
+</html>
