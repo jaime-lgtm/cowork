@@ -424,6 +424,7 @@
 
 <section id="promociones" style="background:var(--brown);color:#fff;padding:clamp(50px,7vw,90px) clamp(20px,4vw,64px);display:flex;flex-direction:column;gap:36px;">
   <div>
+    <img src="images/logo-sueno-de-luna-blanco.png" alt="Sueño de Luna" style="height:70px;object-fit:contain;display:block;margin-bottom:18px;">
     <div style="font-family:'Barlow Condensed';letter-spacing:3px;text-transform:uppercase;color:#f0d9a0;font-weight:600;font-size:15px;">Alianza Sueño de Luna</div>
     <h2 style="font-size:clamp(28px,3.2vw,40px);margin:12px 0 0;">Beneficios para tu jornada de trabajo</h2>
   </div>
@@ -445,7 +446,7 @@
     </div>
   </div>
   <div>
-    <button id="menu-toggle" style="background:var(--olive);color:#20260a;font-weight:700;padding:16px 30px;font-size:16px;border:none;cursor:pointer;">Ver menú / Pedir a la mesa</button>
+    <a href="https://wa.me/528781333237?text=Hola%2C%20me%20gustar%C3%ADa%20ver%20su%20men%C3%BA." target="_blank" rel="noopener" style="display:inline-block;background:var(--gold);color:#20260a;font-weight:700;padding:16px 30px;font-size:16px;text-decoration:none;">Ver menú / Pedir a la mesa</a>
     <div id="menu-panel" hidden="" style="margin-top:20px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.2);padding:26px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;">
       <div><div style="font-size:14px;font-weight:700;color:#f0d9a0;">BEBIDAS</div><div style="font-size:15px;color:#f2ddd3;margin-top:6px;">Café de especialidad, refrescos, tés fríos</div></div>
       <div><div style="font-size:14px;font-weight:700;color:#f0d9a0;">PANINIS</div><div style="font-size:15px;color:#f2ddd3;margin-top:6px;">Pollo pesto, jamón serrano, vegetariano</div></div>
@@ -980,7 +981,7 @@
   // ---- Promociones / menú ----
   var menuToggle = document.getElementById('menu-toggle');
   var menuPanel = document.getElementById('menu-panel');
-  menuToggle.addEventListener('click', function () {
+  if (menuToggle) menuToggle.addEventListener('click', function () {
     state.menuOpen = !state.menuOpen;
     menuPanel.hidden = !state.menuOpen;
     menuToggle.textContent = state.menuOpen ? 'Ocultar menú' : 'Ver menú / Pedir a la mesa';
