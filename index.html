@@ -723,6 +723,7 @@
       var code = 'CW-' + spCode + '-' + state.dateIndex + state.time;
 
       var horarioTxt = state.time + ':00 – ' + (state.time + 1) + ':00';
+      var reservaHora = state.time;
       fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -737,25 +738,30 @@
           correo: correo
         })
       }).then(function (r) { return r.json(); }).then(function (res) {
-        if (res && res.ok && res.folio) {
-          state.confirmationCode = res.folio;
-          renderConfirmBox();
+        btn.disabled = false;
+        btn.textContent = 'Confirmar reservación';
+        if (res && res.error === 'no_registrado') {
+          showReservaError(res.message || 'Este nombre y teléfono no se encuentran registrados como usuario de CoWork. Regístrate para reservar.');
+          return;
         }
+        if (!res || !res.ok || !res.folio) {
+          showReservaError('No se pudo completar la reservación. Intenta de nuevo.');
+          return;
+        }
+        var updated = ocupadas.concat([reservaHora]);
+        availabilityCache[key] = updated;
+        state.occupiedHours = updated;
+        state.confirmed = true;
+        state.confirmationCode = res.folio;
+        state.time = null;
+        renderTimeButtons();
+        renderConfirmBox();
       }).catch(function (err) {
         console.error('No se pudo sincronizar la reservación:', err);
+        btn.disabled = false;
+        btn.textContent = 'Confirmar reservación';
+        showReservaError('No se pudo conectar con el servidor. Intenta de nuevo.');
       });
-
-      // Marcamos el horario como ocupado localmente sin esperar el refetch.
-      var updated = ocupadas.concat([state.time]);
-      availabilityCache[key] = updated;
-      state.occupiedHours = updated;
-
-      state.confirmed = true;
-      state.confirmationCode = code;
-      state.time = null; // ya no está "seleccionado": ahora se ve como ocupado, como cualquier otra reservación
-      btn.disabled = false;
-      btn.textContent = 'Confirmar reservación';
-      renderTimeButtons();
       renderConfirmBox();
     }).catch(function () {
       btn.disabled = false;
