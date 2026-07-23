@@ -70,14 +70,13 @@
 <div id="floating-buttons">
   <div id="visit-panel" hidden="" style="position:fixed;bottom:152px;right:24px;z-index:60;width:min(340px,90vw);background:#fff;border:1px solid var(--line);box-shadow:0 12px 32px rgba(0,0,0,0.18);padding:24px;display:flex;flex-direction:column;gap:12px;">
     <div style="font-weight:700;font-size:17px;color:var(--brown);">Registra tu visita de hoy</div>
-    <input id="visit-nombre" type="text" placeholder="Nombre" style="padding:12px;border:1px solid var(--line);font-size:15px;">
-    <input id="visit-edad" type="number" placeholder="Edad" style="padding:12px;border:1px solid var(--line);font-size:15px;">
-    <input id="visit-folio" type="text" placeholder="Folio de tarjeta (opcional)" style="padding:12px;border:1px solid var(--line);font-size:15px;">
+    <input id="visit-telefono" type="tel" placeholder="Teléfono o WhatsApp" style="padding:12px;border:1px solid var(--line);font-size:15px;">
     <select id="visit-espacio" style="padding:12px;border:1px solid var(--line);font-size:15px;">
-      <option value="auditorio">Auditorio Municipal</option>
-      <option value="salon">Salón de Usos Múltiples</option>
-      <option value="biblioteca">Biblioteca Computacional</option>
-      <option value="cafeteria">Área de cafetería</option>
+      <option value="Salón Usos Múltiples">Salón Usos Múltiples</option>
+      <option value="Auditorio">Auditorio</option>
+      <option value="Cómputo">Cómputo</option>
+      <option value="Cafetería">Cafetería</option>
+      <option value="Uso de las instalaciones">Uso de las instalaciones</option>
     </select>
     <input id="visit-honeypot" type="text" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
     <button id="visit-submit" style="background:var(--maroon);color:#fff;font-weight:700;padding:14px;font-size:15px;border:none;cursor:pointer;">Registrar visita</button>
@@ -434,7 +433,6 @@
 
   // Reemplazar con la URL /exec real al publicar el Google Apps Script Web App
   // conectado a la Hoja de cálculo "Cowork – Registro de Uso" (pestaña Visitas).
-  var SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/REEMPLAZAR_CON_TU_ID/exec';
 
   var state = {
     space: 'auditorio',
@@ -931,44 +929,58 @@
   });
 
   document.getElementById('visit-submit').addEventListener('click', function () {
-    var nombre = document.getElementById('visit-nombre').value.trim();
-    var edad = document.getElementById('visit-edad').value;
-    var folio = document.getElementById('visit-folio').value.trim();
+    var telefono = document.getElementById('visit-telefono').value.trim();
     var espacio = document.getElementById('visit-espacio').value;
     var honeypot = document.getElementById('visit-honeypot').value;
     var errorEl = document.getElementById('visit-error');
     var successEl = document.getElementById('visit-success');
+    var btn = document.getElementById('visit-submit');
     successEl.hidden = true;
     errorEl.hidden = true;
 
     if (honeypot) return; // trampa anti-bot: si se llenó, se ignora en silencio
 
-    if (!nombre || !edad) {
-      errorEl.textContent = 'Ingresa al menos tu nombre y edad.';
+    if (!telefono) {
+      errorEl.textContent = 'Ingresa tu teléfono o WhatsApp.';
       errorEl.hidden = false;
       return;
     }
 
-    var payload = {
-      fecha: new Date().toISOString().slice(0, 10),
-      hora: new Date().toTimeString().slice(0, 5),
-      nombre: nombre, edad: edad, folio: folio, espacio: espacio
-    };
+    btn.disabled = true;
+    btn.textContent = 'Registrando…';
 
-    fetch(SHEET_WEBAPP_URL, {
+    fetch(WEBHOOK_URL, {
       method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    }).catch(function () { /* no-cors: no se puede leer la respuesta; se asume envío */ })
-      .finally(function () {
-        document.getElementById('visit-nombre').value = '';
-        document.getElementById('visit-edad').value = '';
-        document.getElementById('visit-folio').value = '';
-        document.getElementById('visit-espacio').value = 'auditorio';
-        document.getElementById('visit-honeypot').value = '';
-        successEl.hidden = false;
-      });
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        secret: WEBHOOK_SECRET,
+        tipo: 'visita',
+        telefono: telefono,
+        espacio: espacio
+      })
+    }).then(function (r) { return r.json(); }).then(function (res) {
+      btn.disabled = false;
+      btn.textContent = 'Registrar visita';
+      if (res && res.error === 'no_registrado') {
+        errorEl.textContent = res.message || 'Este teléfono no se encuentra registrado como usuario de CoWork. Regístrate para poder registrar tu visita.';
+        errorEl.hidden = false;
+        return;
+      }
+      if (!res || !res.ok) {
+        errorEl.textContent = 'No se pudo registrar tu visita. Intenta de nuevo.';
+        errorEl.hidden = false;
+        return;
+      }
+      document.getElementById('visit-telefono').value = '';
+      document.getElementById('visit-espacio').value = 'Salón Usos Múltiples';
+      document.getElementById('visit-honeypot').value = '';
+      successEl.hidden = false;
+    }).catch(function () {
+      btn.disabled = false;
+      btn.textContent = 'Registrar visita';
+      errorEl.textContent = 'No se pudo conectar con el servidor. Intenta de nuevo.';
+      errorEl.hidden = false;
+    });
   });
 
     // ===== Inscripción a talleres =====
