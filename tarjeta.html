@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Tarjeta COWORK · Tu Nueva Historia</title>
+<style>
+  :root{--vino:#7a1f2b;--vino2:#5c1620;--oro:#e8c37a;--crema:#efe7db;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--crema);color:#231a17;display:flex;flex-direction:column;align-items:center;padding:20px}
+  h1{font-size:18px;color:var(--vino);text-align:center;margin:8px 0 2px}
+  .sub{font-size:13px;color:#7a6d60;text-align:center;margin:0 0 16px}
+  /* Tarjeta */
+  #card{width:340px;background:var(--vino);border-radius:24px;color:#fff;padding:26px 24px 22px;box-shadow:0 14px 40px rgba(90,20,25,.35);position:relative;overflow:hidden}
+  #card::after{content:"";position:absolute;top:-60px;right:-60px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.06)}
+  .top{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1}
+  .brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:13px;letter-spacing:.5px}
+  .brand img{width:34px;height:34px;object-fit:contain}
+  .pase{color:var(--oro);font-weight:800;font-size:12px;letter-spacing:1px}
+  .lbl{font-size:11px;letter-spacing:1.5px;color:#e8c9cd;margin-top:18px}
+  .name{font-size:26px;font-weight:800;line-height:1.1;margin-top:2px}
+  .grid{display:flex;gap:30px;margin-top:14px}
+  .grid .lbl{margin-top:0}
+  .val{font-size:19px;font-weight:800;margin-top:2px}
+  .divider{border-top:1px dashed rgba(255,255,255,.4);margin:18px 0}
+  .benef{font-size:14px;font-weight:700;line-height:1.35}
+  .qrwrap{background:#fff;border-radius:16px;width:170px;height:170px;margin:16px auto 0;display:flex;align-items:center;justify-content:center}
+  #qr canvas,#qr img{width:150px;height:150px;display:block}
+  .foot{text-align:center;font-size:12px;color:#e8c9cd;margin-top:16px}
+  .actions{width:340px;margin-top:18px;display:flex;flex-direction:column;gap:10px}
+  button{padding:14px;font-size:16px;font-weight:700;border:none;border-radius:12px;cursor:pointer;font-family:inherit}
+  .primary{background:var(--vino);color:#fff}
+  .ghost{background:#fff;color:var(--vino);border:1px solid #d8cfc4}
+  .note{font-size:12px;color:#8a7d70;text-align:center;max-width:340px;margin-top:6px}
+  .err{color:#a12028;text-align:center;max-width:340px}
+</style>
+</head>
+<body>
+  <h1>Tu Tarjeta Digital COWORK</h1>
+  <p class="sub">Guárdala en tu teléfono y muéstrala al ingresar</p>
+
+  <div id="card">
+    <div class="top">
+      <div class="brand"><img id="logo" src="images/footer-logo-piedras-negras.png" alt="">COWORK:<br>TU NUEVA HISTORIA</div>
+      <div class="pase">PASE</div>
+    </div>
+    <div class="lbl">TITULAR</div>
+    <div class="name" id="c-name">—</div>
+    <div class="grid">
+      <div><div class="lbl">FOLIO</div><div class="val" id="c-folio">—</div></div>
+      <div><div class="lbl">VIGENCIA</div><div class="val">2026</div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="lbl">BENEFICIOS EN SUEÑO DE LUNA</div>
+    <div class="benef">Panini + Bebida $179 · Refill de café $79 · 10% de descuento</div>
+    <div class="qrwrap"><div id="qr"></div></div>
+    <div class="foot">Casa de la Cultura · Piedras Negras, Coah.</div>
+  </div>
+
+  <div class="actions">
+    <button class="primary" id="download">Descargar mi tarjeta (imagen)</button>
+    <button class="ghost" id="wallet">Agregar a mi teléfono</button>
+  </div>
+  <p class="note" id="note">Descarga la imagen y guárdala en tu galería o captúrala. El QR sirve para tu acceso.</p>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  function qs(k){ return new URLSearchParams(location.search).get(k) || ''; }
+
+  var folio = qs('folio').toUpperCase().trim();
+  var nombre = qs('nombre').trim();
+
+  if(!folio){
+    document.body.innerHTML = '<h1>Tarjeta no disponible</h1><p class="err">No se encontró tu folio. Regístrate primero en el formulario "Regístrate para usar el Cowork".</p><p class="sub"><a href="index.html#tarjeta">Ir al registro</a></p>';
+    return;
+  }
+
+  $('c-folio').textContent = folio;
+  $('c-name').textContent = nombre || 'Titular COWORK';
+
+  // Generar el QR con el folio (el escáner de check-in lo lee)
+  try{
+    new QRCode($('qr'), { text: folio, width:150, height:150, correctLevel: QRCode.CorrectLevel.M });
+  }catch(e){
+    $('qr').innerHTML = '<div style="color:#7a1f2b;font-weight:800;font-size:18px;padding:20px">'+folio+'</div>';
+  }
+
+  // Descargar como imagen PNG
+  $('download').addEventListener('click', function(){
+    if(typeof html2canvas === 'undefined'){ $('note').textContent='Captura la pantalla para guardar tu tarjeta.'; return; }
+    html2canvas($('card'), {backgroundColor:null, scale:3, useCORS:true}).then(function(canvas){
+      var a = document.createElement('a');
+      a.download = 'tarjeta-cowork-'+folio+'.png';
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    }).catch(function(){ $('note').textContent='Captura la pantalla para guardar tu tarjeta.'; });
+  });
+
+  // "Agregar a mi teléfono": guía sencilla (wallet nativo requiere firma; usamos la imagen)
+  $('wallet').addEventListener('click', function(){
+    $('note').textContent = 'Para guardarla: pulsa "Descargar mi tarjeta" y añádela a tu galería, o toma una captura de pantalla. La podrás mostrar al ingresar.';
+  });
+})();
+</script>
+</body>
+</html>
