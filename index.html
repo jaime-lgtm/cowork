@@ -959,6 +959,8 @@
     }
     function closeTallerModal(){ var m=document.getElementById('taller-modal'); if(m) m.style.display='none'; tallerCurrentKey=null; }
     (function(){
+    function __attachTaller(){
+
       var cancelBtn = document.getElementById('taller-cancel');
       if (cancelBtn) cancelBtn.addEventListener('click', closeTallerModal);
       var modalBg = document.getElementById('taller-modal');
@@ -981,7 +983,14 @@
         renderWorkshops();
         closeTallerModal();
       });
-    })();
+    
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', __attachTaller);
+    } else {
+      __attachTaller();
+    }
+  })();
   
     function renderAll() {
     renderReservar();
