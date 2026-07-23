@@ -286,7 +286,7 @@
   </div>
   <div style="max-width:520px;">
     <form id="registro-form" style="display:flex;flex-direction:column;gap:16px;">
-      <input id="reg-nombre" type="text" placeholder="Nombre completo" style="padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;"><input id="reg-nombre" style="flex:1;min-width:150px;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);" placeholder="Nombre(s)"><input id="reg-apellido-paterno" style="flex:1;min-width:150px;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);" placeholder="Apellido Paterno"><input id="reg-apellido-materno" style="flex:1;min-width:150px;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);" placeholder="Apellido Materno"></div>
       <div style="display:flex;gap:16px;">
         <input id="reg-edad" type="number" placeholder="Edad" aria-label="Edad" style="flex:1;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);">
         <input id="reg-telefono" type="tel" placeholder="Teléfono / WhatsApp" aria-label="Teléfono o WhatsApp" style="flex:2;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);">
@@ -832,6 +832,8 @@
   document.getElementById('registro-form').addEventListener('submit', function (e) {
     e.preventDefault();
     var nombre = document.getElementById('reg-nombre').value.trim();
+    var apellidoPaterno = document.getElementById('reg-apellido-paterno').value.trim();
+    var apellidoMaterno = document.getElementById('reg-apellido-materno').value.trim();
     var age = parseInt(regEdad.value, 10);
     var telefono = document.getElementById('reg-telefono').value.trim();
     var correo = document.getElementById('reg-correo').value.trim();
@@ -854,6 +856,8 @@
     sendRegistroTarjeta({
       secret: WEBHOOK_SECRET,
       nombre: nombre,
+      apellidoPaterno: apellidoPaterno,
+      apellidoMaterno: apellidoMaterno,
       edad: isNaN(age) ? '' : age,
       telefono: telefono,
       correo: correo,
