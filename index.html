@@ -286,7 +286,7 @@
   </div>
   <div style="max-width:520px;">
     <form id="registro-form" style="display:flex;flex-direction:column;gap:16px;">
-      <div style="display:flex;gap:16px;flex-wrap:wrap;"><input id="reg-nombre" style="flex:1;min-width:150px;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);" placeholder="Nombre(s)"><input id="reg-apellido-paterno" style="flex:1;min-width:150px;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);" placeholder="Apellido Paterno"><input id="reg-apellido-materno" style="flex:1;min-width:150px;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);" placeholder="Apellido Materno"></div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;"><input id="reg-nombre" style="flex:1;min-width:150px;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);" placeholder="Nombre(s)"><input id="reg-apellido-paterno" style="flex:1;min-width:150px;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);" placeholder="Apellido Paterno"><input id="reg-apellido-materno" style="flex:1;min-width:150px;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);" placeholder="Apellido Materno"></div><div style="display:flex;gap:16px;flex-wrap:wrap;"><select id="reg-sexo" style="flex:1;min-width:150px;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);color:var(--ink-soft);"><option value="">Sexo</option><option value="Hombre">Hombre</option><option value="Mujer">Mujer</option></select><select id="reg-estado-nacimiento" style="flex:2;min-width:200px;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);color:var(--ink-soft);"><option value="">Estado de nacimiento</option><option value="Aguascalientes">Aguascalientes</option><option value="Baja California">Baja California</option><option value="Baja California Sur">Baja California Sur</option><option value="Campeche">Campeche</option><option value="Chiapas">Chiapas</option><option value="Chihuahua">Chihuahua</option><option value="Ciudad de México">Ciudad de México</option><option value="Coahuila">Coahuila</option><option value="Colima">Colima</option><option value="Durango">Durango</option><option value="Estado de México">Estado de México</option><option value="Guanajuato">Guanajuato</option><option value="Guerrero">Guerrero</option><option value="Hidalgo">Hidalgo</option><option value="Jalisco">Jalisco</option><option value="Michoacán">Michoacán</option><option value="Morelos">Morelos</option><option value="Nayarit">Nayarit</option><option value="Nuevo León">Nuevo León</option><option value="Oaxaca">Oaxaca</option><option value="Puebla">Puebla</option><option value="Querétaro">Querétaro</option><option value="Quintana Roo">Quintana Roo</option><option value="San Luis Potosí">San Luis Potosí</option><option value="Sinaloa">Sinaloa</option><option value="Sonora">Sonora</option><option value="Tabasco">Tabasco</option><option value="Tamaulipas">Tamaulipas</option><option value="Tlaxcala">Tlaxcala</option><option value="Veracruz">Veracruz</option><option value="Yucatán">Yucatán</option><option value="Zacatecas">Zacatecas</option><option value="Nacido en el extranjero">Nacido en el extranjero</option></select></div><div style="display:flex;flex-direction:column;gap:6px;"><label for="reg-fecha-nacimiento" style="font-size:13px;color:var(--ink-soft);">Fecha de nacimiento</label><input type="date" id="reg-fecha-nacimiento" style="padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);color:var(--ink-soft);"></div>
       <div style="display:flex;gap:16px;">
         <input id="reg-edad" type="number" placeholder="Edad" aria-label="Edad" style="flex:1;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);">
         <input id="reg-telefono" type="tel" placeholder="Teléfono / WhatsApp" aria-label="Teléfono o WhatsApp" style="flex:2;padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);">
@@ -296,7 +296,7 @@
         <input id="reg-tutor-nombre" type="text" placeholder="Nombre del tutor" style="padding:14px;border:1px solid var(--line);font-size:15px;background:#fff;">
         <input id="reg-tutor-telefono" type="tel" placeholder="Teléfono del tutor" style="padding:14px;border:1px solid var(--line);font-size:15px;background:#fff;">
       </div>
-      <input id="reg-correo" type="email" placeholder="Correo electrónico" aria-label="Correo electrónico" style="padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);">
+      <input id="reg-correo" type="email" placeholder="Correo electrónico" aria-label="Correo electrónico" style="padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);"><input id="reg-direccion" style="padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);" placeholder="Dirección (calle, número y colonia)">
       <select id="reg-perfil" style="padding:16px;border:1px solid var(--line);font-size:16px;background:var(--cream);color:var(--ink-soft);">
         <option value="">¿Cuál es tu perfil? (opcional)</option>
         <option value="Estudiante">Estudiante</option>
@@ -834,6 +834,10 @@
     var nombre = document.getElementById('reg-nombre').value.trim();
     var apellidoPaterno = document.getElementById('reg-apellido-paterno').value.trim();
     var apellidoMaterno = document.getElementById('reg-apellido-materno').value.trim();
+    var sexo = document.getElementById('reg-sexo').value;
+    var fechaNacimiento = document.getElementById('reg-fecha-nacimiento').value;
+    var estadoNacimiento = document.getElementById('reg-estado-nacimiento').value;
+    var direccion = document.getElementById('reg-direccion').value.trim();
     var age = parseInt(regEdad.value, 10);
     var telefono = document.getElementById('reg-telefono').value.trim();
     var correo = document.getElementById('reg-correo').value.trim();
@@ -849,6 +853,14 @@
     function showError(msg) { errorEl.textContent = msg; errorEl.hidden = false; }
 
     if (!nombre) return showError('Ingresa tu nombre completo.');
+    if (!apellidoPaterno) return showError('Ingresa tu apellido paterno.');
+    if (!apellidoMaterno) return showError('Ingresa tu apellido materno.');
+    if (!sexo) return showError('Selecciona tu sexo.');
+    if (!fechaNacimiento) return showError('Ingresa tu fecha de nacimiento.');
+    if (!estadoNacimiento) return showError('Selecciona tu estado de nacimiento.');
+    if (isNaN(age)) return showError('Ingresa tu edad.');
+    if (!telefono) return showError('Ingresa tu telefono o WhatsApp.');
+    if (!direccion) return showError('Ingresa tu direccion.');
     if (isMinor(regEdad.value) && (!tutorNombre || !tutorTelefono)) return showError('Al ser menor de edad, indica los datos de un tutor.');
 
     errorEl.hidden = true;
@@ -858,6 +870,10 @@
       nombre: nombre,
       apellidoPaterno: apellidoPaterno,
       apellidoMaterno: apellidoMaterno,
+      sexo: sexo,
+      fechaNacimiento: fechaNacimiento,
+      estadoNacimiento: estadoNacimiento,
+      direccion: direccion,
       edad: isNaN(age) ? '' : age,
       telefono: telefono,
       correo: correo,
