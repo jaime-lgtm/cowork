@@ -821,13 +821,16 @@
   var WEBHOOK_SECRET = 'COWORK_2026_SECRET';
 
   function sendRegistroTarjeta(data) {
-    fetch(WEBHOOK_URL, {
+    return fetch(WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(data)
-    }).catch(function (err) {
-      console.error('No se pudo sincronizar el registro:', err);
-    });
+    })
+      .then(function (r) { return r.json(); })
+      .catch(function (err) {
+        console.error('No se pudo sincronizar el registro:', err);
+        return null;
+      });
   }
 
   document.getElementById('registro-form').addEventListener('submit', function (e) {
@@ -882,10 +885,18 @@
       estatus: folio ? 'Si' : 'Pendiente',
       recibirInfo: recibirInfo,
       notas: folio ? ('Folio tarjeta: ' + folio) : ''
+    }).then(function (res) {
+      var apellidos = (apellidoPaterno + ' ' + apellidoMaterno).trim();
+      var nombreCompleto = (nombre + ' ' + apellidos).trim();
+      var folioGen = (res && res.folio) ? res.folio : '';
+      if (folioGen) {
+        var url = 'tarjeta.html?folio=' + encodeURIComponent(folioGen) + '&nombre=' + encodeURIComponent(nombreCompleto);
+        successEl.innerHTML = '¡Listo, ' + nombre + '! Tu registro quedó hecho. Tu folio es <strong>' + folioGen + '</strong>.<br><a href="' + url + '" style="display:inline-block;margin-top:12px;padding:12px 20px;background:#7a1f2b;color:#fff;border-radius:10px;text-decoration:none;font-weight:700">Descargar mi tarjeta digital</a>';
+      } else {
+        successEl.textContent = '¡Listo, ' + nombre + '! Tu acceso quedó registrado.';
+      }
+      successEl.hidden = false;
     });
-
-    successEl.textContent = '¡Listo, ' + nombre + '! Tu acceso quedó registrado.';
-    successEl.hidden = false;
   });
 
   // ---- Reportar incidencia ----
